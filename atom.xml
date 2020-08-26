@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://feiyayshx.github.io/web-architecture</id>
-    <title>Gridea</title>
-    <updated>2020-08-26T10:11:37.701Z</updated>
+    <title>似剑非攻、墨眉无锋</title>
+    <updated>2020-08-26T10:13:19.966Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://feiyayshx.github.io/web-architecture"/>
     <link rel="self" href="https://feiyayshx.github.io/web-architecture/atom.xml"/>
     <subtitle>温故而知新</subtitle>
     <logo>https://feiyayshx.github.io/web-architecture/images/avatar.png</logo>
     <icon>https://feiyayshx.github.io/web-architecture/favicon.ico</icon>
-    <rights>All rights reserved 2020, Gridea</rights>
+    <rights>All rights reserved 2020, 似剑非攻、墨眉无锋</rights>
     <entry>
         <title type="html"><![CDATA[Hello Gridea]]></title>
         <id>https://feiyayshx.github.io/web-architecture/post/hello-gridea/</id>
