@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://feiyayshx.github.io/web-architecture</id>
     <title>墨眉</title>
-    <updated>2020-08-26T11:21:21.885Z</updated>
+    <updated>2020-10-10T07:06:30.845Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://feiyayshx.github.io/web-architecture"/>
     <link rel="self" href="https://feiyayshx.github.io/web-architecture/atom.xml"/>
@@ -11,56 +11,1013 @@
     <icon>https://feiyayshx.github.io/web-architecture/favicon.ico</icon>
     <rights>All rights reserved 2020, 墨眉</rights>
     <entry>
-        <title type="html"><![CDATA[javascript之斐波那契]]></title>
-        <id>https://feiyayshx.github.io/web-architecture/post/javascript-recursive/</id>
-        <link href="https://feiyayshx.github.io/web-architecture/post/javascript-recursive/">
+        <title type="html"><![CDATA[Node系列之stream模块]]></title>
+        <id>https://feiyayshx.github.io/web-architecture/post/node-stream/</id>
+        <link href="https://feiyayshx.github.io/web-architecture/post/node-stream/">
         </link>
-        <updated>2020-08-26T10:53:02.000Z</updated>
-        <content type="html"><![CDATA[<p>当递归遇到斐波那契，你真的以为会相安无事吗</p>
+        <updated>2020-09-28T08:04:25.000Z</updated>
+        <summary type="html"><![CDATA[<p>👏 前言： 本文是学习Node时，对其中stream模块学习的一个笔记总结，主要是加强理解！</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>👏 前言： 本文是学习Node时，对其中stream模块学习的一个笔记总结，主要是加强理解！</p>
+<!-- more -->
+<h2 id="1-流的概念">1. 流的概念</h2>
+<p>流(stream)是node.js中处理流式数据的抽象接口。</p>
+<p>stream模块用于构建实现了流接口的对象。</p>
+<p>Node.js 提供了多种流对象，例如，HTTP 服务器的请求和 process.stdout 都是流的实例。</p>
+<p>流可以是可读的、可写的、或者可读可写的。 所有的流都是 EventEmitter 的实例。</p>
+<h2 id="2-node中四种基本的流类型">2. Node中四种基本的流类型</h2>
+<ul>
+<li>
+<p>Writable - 可写入数据的流（例如 fs.createWriteStream()）;</p>
+</li>
+<li>
+<p>Readable - 可读取数据的流（例如 fs.createReadStream()）;</p>
+</li>
+<li>
+<p>Duplex - 可读又可写的流（例如 net.Socket）;</p>
+</li>
+<li>
+<p>Transform - 在读写过程中可以修改或转换数据的 Duplex 流（例如 zlib.createDeflate()）。</p>
+</li>
+</ul>
+<h2 id="3-流的数据模式">3. 流的数据模式</h2>
+<ul>
+<li>
+<p>二进制模式：Node.js 创建的流都是运作在字符串和 Buffer（或 Uint8Array）上;</p>
+</li>
+<li>
+<p>对象模式(object mode)：当创建流时，可以使用 objectMode 选项把流实例切换到对象模式。 将已存在的流切换到对象模式是不安全的</p>
+</li>
+</ul>
+<h2 id="4-可读流的读取模式">4. 可读流的读取模式</h2>
+<p><strong>flowing模式(流动模式)</strong>：可读流自动从系统底层读取数据，并通过EventEmitter接口的事件将数据提供给应用；</p>
+<p><strong>paused模式(暂停模式)</strong>：必须显式调用stream.read()方法从流中读取数据片段；</p>
+<p>所有初始工作模式为paused的Readable流，可以通过三种方式切换到flowing模式：</p>
+<ul>
+<li>监听data事件</li>
+<li>调用stream.resume()</li>
+<li>调用stream.pipe()方法将数据发送到Writeable</li>
+</ul>
+<p>可读流Readable可通过下列方式切换到paused模式：</p>
+<ul>
+<li>如果不存在管道目标（pipe destination），可以通过调用 stream.pause() 方法实现。</li>
+<li>如果存在管道目标，可以通过取消 'data' 事件监听，并调用 stream.unpipe() 方法移除所有管道目标来实现。</li>
+</ul>
+<h2 id="5-可读流的三种状态">5. 可读流的三种状态</h2>
+<p>在任意时刻，可读流应确切处于下面三种状态之一：</p>
+<p><code>readable._readableState.flowing = null</code></p>
+<p><code>readable._readableState.flowing = false</code></p>
+<p><code>readable._readableState.flowing = true</code></p>
+<ul>
+<li>
+<p>若<code>readable._readableState.flowing = null</code>，由于不存在数据消费者，可读流不会产生数据。在此状态下，监听data事件，调用readable.pipe()方法，或者调用readable.resume(),<code>readable._readableState.flowing</code>的值将会变为true, 随着数据生成，可读流开始频繁触发事件。</p>
+</li>
+<li>
+<p>调用<code>readable.pause()</code>,或者<code>readable.unpipe()</code>,或者接收 “背压”（back pressure），将导致 readable._readableState.flowing 值变为 false。这将暂停事件流，但不会暂停数据生成，在这种情况下，为 'data' 事件设置监听函数不会导致 <code>readable._readableState.flowing</code> 变为 true。</p>
+</li>
+<li>
+<p>当 <code>readable._readableState.flowing</code> 值为 false 时， 数据可能堆积到流的内部缓存中。</p>
+</li>
+</ul>
+<h2 id="6-缓冲">6. 缓冲</h2>
+<ul>
+<li>
+<p>可写流和可读流都会在内部的缓冲器中存储数据，可以分别使用的 writable.writableBuffer 或 readable.readableBuffer 来获取。</p>
+</li>
+<li>
+<p>可缓冲的数据大小取决于传入流构造函数的 highWaterMark 选项。 对于普通的流， highWaterMark 指定了字节的总数。 对于对象模式的流， highWaterMark 指定了对象的总数。</p>
+</li>
+<li>
+<p>当调用 stream.push(chunk) 时，数据会被缓冲在可读流中。 如果流的消费者没有调用 stream.read()，则数据会保留在内部队列中直到被消费。</p>
+</li>
+<li>
+<p>一旦内部的可读缓冲的总大小达到 highWaterMark 指定的阈值时，流会暂时停止从底层资源读取数据，直到当前缓冲的数据被消费。</p>
+</li>
+<li>
+<p>当调用 writable.write(chunk) 时，数据会被缓冲在可写流中。 当内部的可写缓冲的总大小小于 highWaterMark 设置的阈值时，调用 writable.write() 会返回 true。 一旦内部缓冲的大小达到或超过 highWaterMark 时，则会返回 false。</p>
+</li>
+<li>
+<p>Duplex 和 Transform 都是可读写的。 在内部，它们都维护了 两个 相互独立的缓冲器用于读和写。 在维持了合理高效的数据流的同时，也使得对于读和写可以独立进行而互不影响。</p>
+</li>
+<li>
+<p>stream API 的关键目标， 尤其对于 stream.pipe() 方法， 就是限制缓冲器数据大小，以达到可接受的程度。这样，对于读写速度不匹配的源头和目标，就不会超出可用的内存大小。</p>
+</li>
+</ul>
+<h2 id="7-自定义可读流">7.  自定义可读流</h2>
+<p>为了实现可读流，继承Readable接口并用它构造新对象</p>
+<pre><code class="language-javascript">
+const { Readable } = require('stream');
+
+class MyRead extends Readable{ // 默认会调用Readable中的read方法
+    _read(){
+        // push方法是Readable中提供的, 调用push将结果放入,就可以触发 on('data事件')
+        this.push('ok'); 
+        // 放入null表示这个流没有更多数据了
+        this.push(null); 
+    }
+}
+
+let mr = new MyRead;
+mr.on('data',function (data) {
+    console.log(data);
+})
+mr.on('end',function () {
+    console.log('end')
+})
+mr.on('open',function () {
+    console.log('open')
+})
+
+</code></pre>
+<h2 id="8-自定义可写流">8. 自定义可写流</h2>
+<p>自定义可写流，继承Writable接口来构造新对象<br>
+_write(chunk,encoding,callback)函数：</p>
+<ul>
+<li>chunk通常是一个buffer，除非我们配置不同的流。</li>
+<li>encoding是在特定情况下需要的参数，通常我们可以忽略它。</li>
+<li>callback是在完成处理数据块后需要调用的函数。这是写数据成功与否的标志。若要发出故障信号，请用错误对象调用回调函数</li>
+</ul>
+<pre><code class="language-javascript">
+const { Writable } = require('stream')
+
+class MyWrite extends Writable {
+  _write(chunk, encoding, cb) {
+    cb();
+  }
+}
+
+let mw = new MyWrite();
+mw.write('ok', function () {
+  console.log('ok')
+})
+mw.write('ab')
+
+</code></pre>
+<h2 id="9-自定义双工流">9. 自定义双工流</h2>
+<p>双工流能读又能写，双工流的可读性和可写性操作完全独立于彼此。这仅仅是将两个特性组合成一个对象。</p>
+<pre><code class="language-javascript">
+const { Duplex } = require('stream');
+class MyDuplex extends Duplex{
+    _read(){
+        this.push('xxx');
+        this.push(null)
+    }
+    _write(chunk,encoding,cb){
+        console.log(chunk);
+        cb() // clearBuffer
+    }
+}
+let md = new MyDuplex();
+md.on('data',function (chunk) {
+    console.log(chunk)
+})
+md.write('ok');
+
+</code></pre>
+<h2 id="10-自定义转换流">10. 自定义转换流</h2>
+<ul>
+<li>
+<p>转换流的输出是从输入中计算出来的。</p>
+</li>
+<li>
+<p>对于转换流，我们不必实现read或write的方法，我们只需要实现一个transform方法，将两者结合起来。它有write功能，也可以用它来push数据。</p>
+</li>
+<li>
+<p>可以用于加密、压缩 ，可以把可写流转换成可读流。</p>
+</li>
+</ul>
+<pre><code class="language-javascript">const { Transform } = require('stream');
+class MyTransfrom extends Transform {
+    _transform(chunk, encoding, cb) {
+        // 这里可以调用push方法
+        this.push(chunk.toString().toUpperCase()); // this.emit()
+        cb();
+    }
+}
+let my = new MyTransfrom();
+process.stdin.on('data',function (chunk) { // 监控用户输入内容
+    process.stdout.write(chunk); 
+})
+process.stdin.pipe(my).pipe(process.stdout)
+// process.std.write('ok'); // console.log() 可写流
+
+</code></pre>
+<h2 id="11-管道流">11. 管道流</h2>
+<pre><code class="language-javascript">
+const stream = require('stream')
+
+var index = 0;
+const readable = stream.Readable({
+    highWaterMark: 2,
+    read: function () {
+        process.nextTick(() =&gt; {
+            console.log('push', ++index)
+            this.push(index+'');
+        })
+    }
+})
+
+const writable = stream.Writable({
+    highWaterMark: 2,
+    write: function (chunk, encoding, next) {
+        console.log('写入:', chunk.toString())
+    }
+})
+
+readable.pipe(writable);
+
+</code></pre>
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[JavaSript系列之设计模式]]></title>
-        <id>https://feiyayshx.github.io/web-architecture/post/javasript-designmode/</id>
-        <link href="https://feiyayshx.github.io/web-architecture/post/javasript-designmode/">
+        <title type="html"><![CDATA[Node系列之fs模块]]></title>
+        <id>https://feiyayshx.github.io/web-architecture/post/node-fs/</id>
+        <link href="https://feiyayshx.github.io/web-architecture/post/node-fs/">
         </link>
-        <updated>2020-08-26T10:44:24.000Z</updated>
-        <summary type="html"><![CDATA[<h2 id="hello-javascript">hello javascript</h2>
+        <updated>2020-09-28T01:47:56.000Z</updated>
+        <summary type="html"><![CDATA[<p>👏 fs模块用于与文件系统交互，所有的文件系统操作都具有同步的、回调的、以及基于 promise 的形式。</p>
 ]]></summary>
-        <content type="html"><![CDATA[<h2 id="hello-javascript">hello javascript</h2>
+        <content type="html"><![CDATA[<p>👏 fs模块用于与文件系统交互，所有的文件系统操作都具有同步的、回调的、以及基于 promise 的形式。</p>
 <!-- more -->
+<h2 id="相关名词">相关名词</h2>
+<ul>
+<li>文件描述符</li>
+</ul>
+<h2 id="fs方法">fs方法</h2>
+<ul>
+<li>fs.copyFile()</li>
+<li>fs.access()</li>
+</ul>
+<h2 id="文件拷贝简单版">文件拷贝(简单版)</h2>
+<ul>
+<li>fs 操作接受的文件路径可以是字符串、Buffer,或URL对象;</li>
+<li>如果读取文件，读到的结果默认是buffer类型;</li>
+<li>写入的时候 会清空文件内容，并且以utf8格式类型写入;</li>
+</ul>
+<pre><code class="language-javascript">
+// 将文件homework.js中的内容拷贝到demo.js中
+const fs = require('fs')
+const path = require('path')
+fs.readFile(path.resolve(__dirname,'homework.js'),function(err,data) {
+  fs.appendFile(path.resolve(__dirname,'demo.js'),data,function(err){
+    console.log('copy finished')
+  })
+})
+
+</code></pre>
+<blockquote>
+<p>注意：运行时如果用相对路径，会以process.cwd() 来切换路径，可能会导致不同路径下运行结果不同。故使用绝对路径。</p>
+</blockquote>
+<p><strong>缺点:</strong></p>
+<ul>
+<li>读取文件时，读取的内容放在内存中，如果文件过大会浪费内存，淹没可用内存，大型文件不能采用此方式操作；一般64kb 以上的文件实现拷贝尽量不要使用readFile方法。</li>
+</ul>
+<h2 id="文件拷贝改进版">文件拷贝(改进版)</h2>
+<p>简单版的文件拷贝不适合读取大文件，容易造成内存浪费; 对于读取大型文件的场景，需要分段读取文件，实现读取一点写入一点；核心方法有：fs.open()、fs.read()、fs.write()、fs.close()。</p>
+<pre><code class="language-javascript">
+const fs = require('fs')
+function copyFile(source, target, callback) {
+  const BUFFER_LENGTH = 6
+  let readPosition = 0
+  let writePosition = 0
+  const buffer = Buffer.alloc(BUFFER_LENGTH)
+  // 打开文件，读取内容
+  fs.open(source, 'r', function (err, rfd) {
+    // 打开文件，写入内容
+    fs.open(target, 'w', function (err, wfd) {
+      function copy() {
+        fs.read(rfd, buffer, 0, BUFFER_LENGTH, readPosition, function (err, bytesRead) {
+          // 读取到的实际字节数
+          if (err) return callback(err)
+          if (bytesRead) {
+            // 将读取的数据写入文件
+            fs.write(wfd, buffer, 0, bytesRead, writePosition, function (err, written) {
+              readPosition += bytesRead
+              writePosition += bytesRead
+              copy();
+            })
+          } else {
+            fs.close(rfd, () =&gt; { })
+            fs.close(wfd, () =&gt; { })
+            callback()
+          }
+        })
+      }
+      copy()
+    })
+  })
+}
+
+/*---------功能测试----------*/
+copyFile('./3.fs.js', './demo.js', function () {
+  console.log('copy finished')
+})
+
+</code></pre>
+<h2 id="文件拷贝终极版">文件拷贝(终极版)</h2>
+<p>文件拷贝的终极版是对改进版的一种优化；fs 基于流封装了文件的可读流方法fs.createReadStream和可写流方法fs.createWriteStream。</p>
+<h3 id="fscreatereadstream-可读流内部实现过程及用法">fs.createReadStream 可读流内部实现过程及用法</h3>
+<p>实现了stream.Readable接口的对象，将对象数据读取为流数据；</p>
+<ul>
+<li>
+<ol>
+<li>内部调用 new ReadStream, 继承于Readable接口；</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>先进行数据格式化；</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>默认打开文件，ReadStream.prototype.read</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Readable.prototype.read -&gt;  ReadStream.prototype._read</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p>想基于Readable接口实现自己的可读流 你需要自己去实现一个_read方法，默认开始读取时会去调用此方法.<br>
+可读流对象 必须有on('data') on('end')  , 文件流会提供两个方法 open/close<br>
+控制读取速率 rs.pause rs.resume</p>
+</blockquote>
+<h4 id="创建可读流">创建可读流</h4>
+<pre><code class="language-javascript">
+const fs = require('fs')
+const path = require('path')
+
+let readStream = fs.createReadStream(path.resolve(__dirname, 'demo.md'), {
+  flags: 'r', // 可读性标识，默认值'r',读取文件
+  encoding: null, // 编码，默认null
+  autoClose: false, // 读取完毕后自动关闭，默认true
+  start: 0, // 从文件中指定开始位置读取，包括该位置
+  end: 4,   // 指定读取文件的结束位置，包括该位置
+  highWaterMark: 2 // 每次读取的字节数，默认64 * 1024 个字节
+
+})
+
+</code></pre>
+<h4 id="监听data事件">监听data事件</h4>
+<p>流切换到流动模式,数据会被尽可能快的读出</p>
+<pre><code class="language-javascript">
+let arr = []
+// 默认一旦监听data事件，会不停触发data方法
+readStream.on('data', function (chunk) {
+  arr.push(chunk)
+})
+</code></pre>
+<h4 id="监听end事件">监听end事件</h4>
+<p>数据读取完毕，触发end事件</p>
+<pre><code class="language-javascript">
+readStream.on('end', function () {
+  console.log(Buffer.concat(arr), '文件读取完毕！')
+})
+</code></pre>
+<h4 id="监听error事件">监听error事件</h4>
+<pre><code class="language-javascript">
+readStream.on('error', function (err) {
+  console.log(err)
+})
+</code></pre>
+<h4 id="监听open事件">监听open事件</h4>
+<pre><code class="language-javascript">
+readStream.on('open', function (fd) {
+  console.log(fd, 'open 打开文件')
+})
+</code></pre>
+<h4 id="监听colse事件">监听colse事件</h4>
+<pre><code class="language-javascript">
+readStream.on('close',function(){
+  console.log('close 关闭文件')
+})
+</code></pre>
+<h4 id="设置编码">设置编码</h4>
+<p><code>readStream.setEncoding('utf8')</code></p>
+<h4 id="暂停和恢复触发data">暂停和恢复触发data</h4>
+<pre><code class="language-javascript">
+readStream.on('data', function (data) {
+    readStream.pause();  // 暂停读取
+    console.log(data);
+});
+setTimeout(function () {
+    readStream.resume(); // 读取
+},2000);
+</code></pre>
+<h3 id="fscreatewritestream-可写流用法">fs.createWriteStream 可写流用法</h3>
+<p>实现了stream.Writeable 接口对象，将流数据写入到对象中</p>
+<h4 id="创建可写流">创建可写流</h4>
+<pre><code class="language-javascript">
+const fs = require('fs');
+const path = require('path');
+
+const ws = fs.createWriteStream(path.resolve(__dirname, 'test.txt'),{
+    flags:'w',
+    encoding:'utf8',
+    autoClose:true,
+    highWaterMark: 2// 默认写的水位线是16k
+});
+
+</code></pre>
+<h4 id="write-方法">write() 方法</h4>
+<p><code>ws.write(chunk,[encoding],[callback])</code></p>
+<ul>
+<li>chunk: string/buffer</li>
+<li>encoding: 编码格式chunk为字符串时有用，可选</li>
+<li>callback: 写入成功后的回调</li>
+</ul>
+<blockquote>
+<p>返回值为布尔值，系统缓存区满时为false,未满时为true</p>
+</blockquote>
+<h4 id="end-方法">end() 方法</h4>
+<p><code>ws.end(chunk,[encoding],[callback])</code><br>
+可以在关闭流之前再写入一段数据 如果传入了可选的 callback 函数，它将作为 'finish' 事件的回调函数;</p>
+<h4 id="drain-方法">drain() 方法</h4>
+<ul>
+<li>当流不处在drain状态时，对write()的调用会缓存数据块，返回false;当前所有缓存的数据块都清空后，会触发drain()事件；</li>
+</ul>
+<pre><code class="language-javascript">
+let fs = require('fs');
+let ws = fs.createWriteStream('./demo.md',{
+  flags:'w',
+  encoding:'utf8',
+  highWaterMark:3
+});
+let i = 10;
+function write(){
+ let  flag = true;
+ while(i&amp;&amp;flag){
+      flag = ws.write(&quot;1&quot;);
+      i--;
+     console.log(flag);
+ }
+}
+write();
+ws.on('drain',()=&gt;{
+  console.log(&quot;drain&quot;);
+  write();
+});
+
+</code></pre>
+<h4 id="finish-方法">finish() 方法</h4>
+<p>在调用了 stream.end() 方法，且缓冲区数据都已经传给底层系统之后， 'finish' 事件将被触发。</p>
+<pre><code class="language-javascript">
+for (let i = 0; i &lt; 100; i++) {
+  ws.write(`hello, ${i}!\n`);
+}
+ws.end('结束\n');
+ws.on('finish', () =&gt; {
+  console.error('所有的写入已经完成!');
+});
+
+</code></pre>
+<h3 id="借助fs模块提供的可读流与可写流方法实现拷贝">借助fs模块提供的可读流与可写流方法实现拷贝</h3>
+<pre><code class="language-javascript">
+const fs = require('fs')
+let readStream = fs.createReadStream('./3.fs.js', { highWaterMark: 4 })
+let writeStream = fs.createWriteStream('./demo.js', { highWaterMark: 2 })
+readStream.pipe(writeStream)
+
+</code></pre>
+<h2 id="文件可读流的简单实现">文件可读流的简单实现</h2>
+<pre><code class="language-javascript">
+const fs = require('fs');
+const EventEmitter = require('events')
+class ReadStream extends EventEmitter {
+  constructor(path, options = {}) {
+    super()
+    this.path = path;
+    this.flags = options.flags || 'r';
+    this.encoding = options.encoding || null;
+    if (typeof options.autoClose == &quot;undefined&quot;) {
+      this.autoClose = true
+    } else {
+      this.autoClose = options.autoClose
+    }
+    this.start = options.start || 0;
+    this.end = options.end || undefined;
+    this.highWaterMark = options.highWaterMark || 64 * 1024;
+    this.open(); // 默认就调用开启事件
+    this.offset = this.start; // offset 可以根据每次读取的位置发生变化 
+    this.flowing = false; // 默认就是非流动模式
+    this.on('newListener', (type) =&gt; {
+      if (type == 'data') { // 说明用户监听了data事件
+        this.flowing = true;
+
+        this.read(); // 读取吧
+      }
+    });
+  }
+  pipe(ws) {
+    this.on('data', (chunk) =&gt; {
+      let flag = ws.write(chunk);
+      if (!flag) {
+        this.pause();
+      }
+    })
+    ws.on('drain', () =&gt; {
+      this.resume();
+    })
+  }
+  pause() {
+    this.flowing = false;
+  }
+  resume() {
+    if (!this.flowing) {
+      this.flowing = true;
+      this.read(); // 继续读取
+    }
+  }
+  open() {
+    fs.open(this.path, this.flags, (err, fd) =&gt; {
+      if (err) {
+        return this.emit('error', err)
+      }
+      this.fd = fd; // 将文件描述符保存起来
+      this.emit('open', fd)
+    })
+  }
+  read() {
+    if (typeof this.fd != 'number') { // 保证fd 一定存在，不能存在就等会 什么时候存在再用 
+      return this.once('open', () =&gt; this.read())
+    }
+    // fd 一定存在了, buffer是内存 内存是引用类型
+
+    const buffer = Buffer.alloc(this.highWaterMark);
+    let howMuchToRead = this.end ? Math.min((this.end - this.offset + 1), this.highWaterMark) : this.highWaterMark; // 真正要读取的个数
+    fs.read(this.fd, buffer, 0, howMuchToRead, this.offset, (err, bytesRead) =&gt; { // 真正读取到的个数
+      if (bytesRead) {
+        this.offset += bytesRead; // 每次读到后就累加,方便下次继续读取
+        this.emit('data', buffer.slice(0, bytesRead))
+        if (this.flowing) {
+          this.read();
+        }
+      } else {
+        this.emit('end');
+        if (this.autoClose) {
+          fs.close(this.fd, () =&gt; {
+            this.emit('close');
+          })
+        }
+      }
+    })
+  }
+}
+module.exports = ReadStream;
+
+fs.createReadStream = function(path, options) {
+  return new ReadStream(path, options);
+};
+
+</code></pre>
+<h2 id="文件可写流的简单实现">文件可写流的简单实现</h2>
+<ul>
+<li>用链表可以实现栈或者队列， 从头部获取数据性能较高；</li>
+<li>第一次写入操作是向文件中写入 ，后续的操作都缓存到链表中；</li>
+</ul>
+<pre><code class="language-javascript">
+const EventEmitter = require('events');
+const fs = require('fs');
+const Queue = require('./Queue');
+class WriteStream extends EventEmitter {
+  constructor(path, options = {}) {
+    super(options);
+    this.path = path;
+    this.flags = options.flags || 'w';
+    this.encoding = options.encoding || 'utf8';
+    this.autoClose = options.autoClose || true;
+    this.highWaterMark = options.highWaterMark || 16 * 1024;
+    this.open();
+
+    // 要判断是第一次写入 还是第二次写入
+    this.writing = false; // 用来描述当前是否有正在写入的操作
+    this.len = 0; // 需要的统计的长度
+    this.needDrain = false;// 默认是否触发drain事件
+    this.offset = 0; // 每次写入时的偏移量
+    this.cache = new Queue// 用来实现缓存的
+  }
+  write(chunk, encoding = this.encoding, cb = () =&gt; { }) { // 用户调用的write方法
+    // 判断时真的写入 还是放到缓存中
+    // 用户调用write时 写入的数据可能时stringOrBuffer
+    chunk = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)
+    this.len += chunk.length;
+    let ret = this.len &lt; this.highWaterMark;
+    if (!ret) { // 达到预期或者超过预期 就改变触发drian事件
+      this.needDrain = true;
+    }
+    if (this.writing) { // 如果正在写入就先存起来 稍后再去写入
+      this.cache.offer({ //f
+        chunk,
+        encoding,
+        cb
+      })
+    } else {
+      this.writing = true;// 标识为正在写入
+      this._write(chunk, encoding, () =&gt; { // z
+        cb(); // 用户本来的回调要执行
+        this.clearBuffer();
+      });
+    }
+    return ret
+  }
+  clearBuffer() { // 对个异步并发 可以考队列来实现 依次清空
+    let data = this.cache.poll();
+    if (data) {
+      let { chunk, encoding, cb } = data;
+      this._write(chunk, encoding, () =&gt; {
+        cb();
+        this.clearBuffer();
+      })
+    } else {
+      this.writing = false;// 缓存中的内容也写入了 清空缓存
+      if (this.needDrain) {
+        this.needDrain = false;
+        this.emit('drain');
+      }
+    }
+  }
+  open() {
+    fs.open(this.path, this.flags, (err, fd) =&gt; {
+      if (err) return this.emit('error', err);
+      this.fd = fd;
+      this.emit('open', fd);
+    })
+  }
+  _write(chunk, encoding, cb) { // fs.write =&gt; doWrite
+    if (typeof this.fd !== 'number') {
+      return this.once('open', () =&gt; this._write(chunk, encoding, cb))
+    }
+    fs.write(this.fd, chunk, 0, chunk.length, this.offset, (err, written) =&gt; {
+      this.len -= written;
+      this.offset += written;
+      cb();
+    })
+  }
+}
+module.exports = WriteStream
+
+fs.createWriteStream = function(path, options) {
+  return new WriteStream(path, options);
+};
+
+// 实现读一点 （on('data') on('end') pause resume） 写一点   (write,end)
+
+</code></pre>
+<h2 id="手写实现一个链表">手写实现一个链表</h2>
+<pre><code class="language-javascript">
+class Node {
+    constructor(element, next) {
+        this.element = element;
+        this.next = next;
+    }
+}
+class LinkedList {
+    constructor() {
+        this.head = null;
+        this.size = 0;
+    }
+    add(index, element) { // 增加节点
+        if (arguments.length == 1) {
+            element = index;
+            index = this.size
+        }
+        if (index &lt; 0 || index &gt; this.size) throw new Error('链表索引异常');
+
+        if (index == 0) {
+            let head = this.head; // 老的头
+            this.head = new Node(element, head);
+        } else {
+            let prevNode = this.getNode(index - 1); // 这里前面节点肯定有，如果没有会走if
+            prevNode.next = new Node(element, prevNode.next);
+        }
+        this.size++;
+    }
+    remove(index) { // 删除节点
+        if(this.size == 0) return null
+        let oldNode;
+        if (index == 0) {
+            oldNode = this.head;
+            this.head = oldNode &amp;&amp; oldNode.next;
+        } else {
+            let prevNode = this.getNode(index-1); // 获取当前的前一个节点 
+            oldNode = prevNode.next; // 前一个的下一个就是要删除的 
+            prevNode.next = oldNode.next; // 让前一个下一个 执行 之前的下一个
+        }
+        this.size--;
+        return oldNode.element; // 返回删除元素
+    }
+    getNode(index) { // 获取节点
+        let current = this.head; // 从头找
+        for (let i = 0; i &lt; index; i++) {
+            current = current.next;
+        }
+        return current;
+    }
+    length() { // 链表的总个数
+        return this.size
+    }
+    reverseLinkedList2(){
+        function reverse(head){ // 先递归最里面的，在出来
+            // 如果链表为空 或者没有下一个了 就不用反转了
+            if(head == null || head.next == null) return head;
+            let newHead = reverse(head.next); // 将原来的下一个变成头结点
+            head.next.next = head; // 让下一个节点的下一个指向原来的头
+            head.next = null; // 让老头指向null
+            return newHead
+        }   
+        this.head = reverse(this.head)
+        return this.head;
+    }
+    reverseLinkedList(){
+        let head = this.head; // 保留老头
+        if(head == null || head.next == null) return head;
+        let newHead = null; // 新的链表头部默认指向null
+        while(head!==null){ // 循环老的链表 将内容依次的取出使用
+            let temp = head.next; // 存储的是100 
+            head.next = newHead;  // 让老的头指向新的头
+            newHead = head; // 新的头指向了老的头 
+            head = temp; // 老的头向后移动
+        }
+        this.head = newHead;
+        return this.head
+    }
+}
+module.exports = LinkedList
+
+</code></pre>
+<h2 id="基于链表封装队列">基于链表封装队列</h2>
+<pre><code class="language-javascript">
+let LinkedList = require('./LinkedList');
+class Queue{ // 队列是添加和删除
+    constructor(){
+        this.ll = new LinkedList();
+    }
+    offer(element){ // 入队列
+        this.ll.add(element);
+    }
+    poll(){
+        return this.ll.remove(0);
+    }
+}
+module.exports = Queue;
+
+</code></pre>
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Hello Gridea]]></title>
-        <id>https://feiyayshx.github.io/web-architecture/post/hello-gridea/</id>
-        <link href="https://feiyayshx.github.io/web-architecture/post/hello-gridea/">
+        <title type="html"><![CDATA[Node系列之认识Buffer]]></title>
+        <id>https://feiyayshx.github.io/web-architecture/post/node-buffer/</id>
+        <link href="https://feiyayshx.github.io/web-architecture/post/node-buffer/">
         </link>
-        <updated>2018-12-11T16:00:00.000Z</updated>
-        <summary type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
-✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+        <updated>2020-09-22T15:16:15.000Z</updated>
+        <summary type="html"><![CDATA[<p>👉Buffer 对象用于表示固定长度的字节序列；<br>
+⭐️Buffer 类是JavaScript 的Unit8Array 类的子类，全局变量；</p>
 ]]></summary>
-        <content type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
-✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+        <content type="html"><![CDATA[<p>👉Buffer 对象用于表示固定长度的字节序列；<br>
+⭐️Buffer 类是JavaScript 的Unit8Array 类的子类，全局变量；</p>
 <!-- more -->
-<p><a href="https://github.com/getgridea/gridea">Github</a><br>
-<a href="https://gridea.dev/">Gridea 主页</a><br>
-<a href="http://fehey.com/">示例网站</a></p>
-<h2 id="特性">特性👇</h2>
-<p>📝  你可以使用最酷的 <strong>Markdown</strong> 语法，进行快速创作</p>
-<p>🌉  你可以给文章配上精美的封面图和在文章任意位置插入图片</p>
-<p>🏷️  你可以对文章进行标签分组</p>
-<p>📋  你可以自定义菜单，甚至可以创建外部链接菜单</p>
-<p>💻  你可以在 <strong>Windows</strong>，<strong>MacOS</strong> 或 <strong>Linux</strong> 设备上使用此客户端</p>
-<p>🌎  你可以使用 <strong>𝖦𝗂𝗍𝗁𝗎𝖻 𝖯𝖺𝗀𝖾𝗌</strong> 或 <strong>Coding Pages</strong> 向世界展示，未来将支持更多平台</p>
-<p>💬  你可以进行简单的配置，接入 <a href="https://github.com/gitalk/gitalk">Gitalk</a> 或 <a href="https://github.com/SukkaW/DisqusJS">DisqusJS</a> 评论系统</p>
-<p>🇬🇧  你可以使用<strong>中文简体</strong>或<strong>英语</strong></p>
-<p>🌁  你可以任意使用应用内默认主题或任意第三方主题，强大的主题自定义能力</p>
-<p>🖥  你可以自定义源文件夹，利用 OneDrive、百度网盘、iCloud、Dropbox 等进行多设备同步</p>
-<p>🌱 当然 <strong>Gridea</strong> 还很年轻，有很多不足，但请相信，它会不停向前 🏃</p>
-<p>未来，它一定会成为你离不开的伙伴</p>
-<p>尽情发挥你的才华吧！</p>
-<p>😘 Enjoy~</p>
+<h2 id="1-buffer-与字符编码">1. Buffer 与字符编码</h2>
+<p>字符编码：</p>
+<ul>
+<li>ASCII编码</li>
+<li>Unicode</li>
+<li>UTF-8</li>
+<li>GBK</li>
+<li>GB2322</li>
+<li>GB18030</li>
+</ul>
+<blockquote>
+<p>一个字节由8个位组成，gbk中一个汉字2个字节，utf8中一个汉字3个字节</p>
+</blockquote>
+<p>Buffer 与字符串之间转换可以指定字符编码，如果未指定，默认是 UTF-8；<br>
+Node支持两种二进制转文本的编码：base64、hex; 不支持GBK编码</p>
+<pre><code class="language-javascript">
+let buffer = Buffer.from('hello node','utf8')
+console.log(buffer.toString('base64'))
+
+</code></pre>
+<h2 id="2-buffer的三种定义方法">2. Buffer的三种定义方法</h2>
+<ul>
+<li>Buffer 声明后大小固定，不可随意更改大小，可以再声明一个空间将结果拷贝进去；</li>
+<li>可以通过索引更改buffer内容；</li>
+</ul>
+<pre><code class="language-javascript">
+// buffer1声明的字节数是4，&lt;Buffer 00 00 00 00&gt;
+let buffer1 = Buffer.alloc(4) 
+
+// buffer2的长度是9个字节，&lt;Buffer e5 a4 a7 e5 89 8d e7 ab af&gt;
+let buffer2 = Buffer.from('大前端') 
+
+// buffer3长度是array的元素数目，&lt;Buffer 01 02 03 04&gt;
+let buffer3 = Buffer.from([1, 2, 3, 4]) 
+
+</code></pre>
+<h2 id="3-buffer的常用方法">3. Buffer的常用方法</h2>
+<pre><code class="language-javascript">
+buff.toString()
+buff.fill()
+buff.slice()
+buff.copy
+Buffer.concat()
+Buffer.isBuffer()
+
+</code></pre>
+<p><strong>Buffer.concat() 方法的实现</strong></p>
+<pre><code class="language-javascript">
+Buffer.concat = function (bufferList, length = bufferList.reduce((a,b)=&gt;a+b.length,0) {
+    let buf = Buffer.alloc(length);
+    let offset = 0
+    bufferList.forEach(bufItem =&gt; {
+        bufItem.copy(buf,offset);
+        offset += bufItem.length;
+    });
+    return buf.slice(0,offset)
+}
+
+/* 用法 */
+let buffer1 = Buffer.from('喜马拉雅');
+let buffer2 = Buffer.from('hello');
+const newBuffer = Buffer.concat([buffer1,buffer2],20)
+console.log(newBuffer)
+console.log(Buffer.isBuffer(newBuffer))
+
+</code></pre>
+<p><strong>buf.copy() 方法的实现</strong></p>
+<p><code>buf.copy(target,targetStart,sourceStart,sourceEnd)</code></p>
+<ul>
+<li><code>target</code>: 要拷贝进的Buffer</li>
+<li><code>targetStart</code>: target 中开始写入之前要跳过的字节数; 默认值: 0。</li>
+<li><code>sourceStart</code>: buf 中开始拷贝的偏移量; 默认值: 0。</li>
+<li><code>sourceEnd</code>: buf 中结束拷贝的偏移量（不包含）; 默认值: buf.length。</li>
+</ul>
+<pre><code class="language-javascript">
+Buffer.prototype.copy = function(targetBuffer,targetStart,sourceStart,sourceEnd){
+  for(let i=sourceStart;i&lt;sourceEnd;i++){
+    targetBuffer[targetStart++]=this[i];
+  }
+}
+
+/* 用法 */
+var buf = Buffer.alloc(12);
+var buffer1 = Buffer.from('天天');
+var buffer2 = Buffer.from('向上');
+buffer1.copy(buf, 0, 0, 6)
+buffer2.copy(buf, 6, 0, 6)
+console.log(buf)
+
+</code></pre>
+<p><strong>buf.split() 方法的实现</strong></p>
+<p><code>buf.split(separator)</code></p>
+<ul>
+<li><code>separator</code>: 分隔符，将buffer 按分隔符分割组装成数组</li>
+</ul>
+<pre><code class="language-javascript">
+Buffer.prototype.split = function(sep){ // slice + indexOf = split
+  let arr = [];
+  let len = Buffer.from(sep).length; //  分割符号的长度
+  let offset = 0;
+  let current;
+  while(-1!=(current = this.indexOf(sep,offset))){
+      // 找到的位置 加上偏移量
+      arr.push(this.slice(offset,current));
+      offset = current+len;
+  }
+  arr.push(this.slice(offset));
+  return arr;
+}
+
+/* 用法 */
+let buffer = Buffer.from('hello&amp;node&amp;js','utf8')
+let bufArr = buffer.split('&amp;')
+
+// [ &lt;Buffer 68 65 6c 6c 6f&gt;, &lt;Buffer 6e 6f 64 65&gt;, &lt;Buffer 6a 73&gt; ]
+console.log(bufArr) 
+
+// 迭代buffer
+for(let item of bufArr) {
+    // hello node js
+  console.log(item.toString())
+}
+
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Javascript之进制转换]]></title>
+        <id>https://feiyayshx.github.io/web-architecture/post/decimal-binary-conversion/</id>
+        <link href="https://feiyayshx.github.io/web-architecture/post/decimal-binary-conversion/">
+        </link>
+        <updated>2020-09-17T04:49:50.000Z</updated>
+        <summary type="html"><![CDATA[<p>👇Javascript中的进制转换方法：<code>toString()</code>、<code>parseInt()</code></p>
+]]></summary>
+        <content type="html"><![CDATA[<p>👇Javascript中的进制转换方法：<code>toString()</code>、<code>parseInt()</code></p>
+<!-- more -->
+<h2 id="1-十进制转其他进制">1. 十进制转其他进制</h2>
+<ul>
+<li><code>toString(radix)</code>
+<ul>
+<li><code>radix</code> &lt;Number&gt;  进制对应的基数</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-javascript">
+let x= 20
+x.toString(2)   // 转为二进制：10100
+x.toString(8)   // 转为八进制：24
+x.toString(16)  // 转为十六进制：14
+20.0.toString(16) // 转为十六进制：14
+</code></pre>
+<h2 id="2-其他进制转十进制">2. 其他进制转十进制</h2>
+<ul>
+<li><code>parseInt(value,radix)</code>
+<ul>
+<li><code>value</code>  &lt;String&gt; 其他进制的值，是一个字符串</li>
+<li><code>radix</code>  &lt;Number&gt; 基数</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-javascript">
+parseInt('10100',2)    // 2进制转十进制:20
+parseInt('024',8)   //  8进制转十进制:20
+parseInt('0x14',16)   //  16进制转十进制:20
+</code></pre>
+<h2 id="3-十进制小数转二进制小数">3. 十进制小数转二进制小数</h2>
+<p>JS浮点数分整数和小数两部分；这里以25.75举例说明：<br>
+（1）将整数25转为二进制：采取除2取余，直到除数为0,最后将余数逆序排列；</p>
+<pre><code class="language-javascript">
+25/2=12 ...1
+12/2=6 ...0
+6/2=3 ...0
+3/2=1 ...1
+1/2=0 ...1
+</code></pre>
+<p><em>故整数部分二进制值为：11001</em></p>
+<p>（2）将小数部分0.75转为二进制：采取乘2取整，直到乘积结果为1，最后将整数顺序排列；</p>
+<pre><code class="language-javascript">
+0.75*2=1.5 ...1
+0.5*2=1 ...1
+</code></pre>
+<p><em>故小数部分二进制值为：11</em></p>
+<p><strong>因此浮点数25.75的二进制值为11001.11</strong></p>
+<h2 id="4-二进制小数丢失精度导致的问题">4. 二进制小数丢失精度导致的问题</h2>
+<p>举例说明：<code>0.1 + 0.2 ！= 0.3</code>,  js 计算时 将0.1，0.2分别转为二进制；计算过程如下：</p>
+<pre><code class="language-javascript">
+// 0.1 转为二进制计算过程
+0.1 * 2 = 0.2    0
+0.2 * 2 = 0.4    0
+0.4 * 2 = 0.8    0
+0.8 * 2 = 1.6    1  =&gt; 0.6
+0.6 * 2 = 1.2    1  =&gt; 0.2
+0.2 * 2 = 0.4    0 // 出现无限循环
+0.4 * 2 = 0.8    0
+0.8 * 2 = 1.6    1
+0.6 * 2 = 1.2    1
+0.2 * 2 = 0.4    0
+...
+// 0.2 转为二进制计算过程
+0.2 * 2 = 0.4    0
+0.4 * 2 = 0.8    0
+0.8 * 2 = 1.6    1
+0.6 * 2 = 1.2    1
+0.2 * 2 = 0.4    0
+0.4 * 2 = 0.8    0
+0.8 * 2 = 1.6    1  // 出现无限循环
+...
+</code></pre>
+<p>0.1 -&gt;  0.000110011001.....<br>
+0.2 -&gt; 0.001100110011......<br>
+因为js 的数字是采用IEEE754标准的64位双精度浮点数进行存储，小数部分最多支持53位二进制位，所以无限循环的小数二进制位会被舍去；<br>
+<strong>故0.1 + 0.3 近似等于 0.30000000000000004</strong></p>
+<h2 id="5-js中的安全数">5. JS中的安全数</h2>
+<ol>
+<li>尾数部分：0-51 bit，决定数值的精度</li>
+<li>指数部分：52-62 bit ,决定数值的大小</li>
+<li>符号位：63bit, 决定数值的正负；0表示正数，1表示负数；</li>
+</ol>
+<h2 id="6-base64-编码">6. base64 编码</h2>
+<p>ASCII码 是对英文字符编码的一种编码方式，使用一个字节(8 bit)编码英文字符；<br>
+base64是选出64个字符作为基本字符集，其他所有符号都转换成这个字符集中的字符；<br>
+<strong>这64个字符包括：a-z、A-Z、0-9、+、/</strong></p>
+<ul>
+<li>base64 编码过程：
+<ul>
+<li>step1: 将每三个字节分为一组，一个字节有8个二进制位，一共有24个二进制位；</li>
+<li>step2: 再将这24个二进制位重新分为四组，每组有6个二进制位；</li>
+<li>step3: 在每组前面补两个0，扩展成32个二进制位，即四个字节；</li>
+<li>setp4: 根据下表映射，得到扩展后每个字节对应的符号，就是最终的base64编码值。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>A-0  B-1  C-2  D-3  E-4  F-5  G-6  H-7  I-8  J-9  K-10  L-11  M-12  N-13  O-14  P-15  Q-16  R-17  S-18  T-19  U-20  V-21  W-22  X-23  Y-24  Z-25<br>
+a-26  b-27  c-28  d-29  e-30  f-31  g-32  h-33 i-34  j-35  k-36  l-37  m-38  n-39  o-40  p-41  q-42  r-43  s-44  t-45  u-46  v-47 w-48 x-49  y-50  z-51<br>
+0-52 1-53  2-54 3-55 4-56  5-57 6-58  7-59  8-60 9-61 +-62 /-63</p>
+</blockquote>
+<h3 id="参考文章">参考文章</h3>
+<p><a href="http://www.ruanyifeng.com/blog/2008/06/base64.html">Base64笔记</a></p>
 ]]></content>
     </entry>
 </feed>

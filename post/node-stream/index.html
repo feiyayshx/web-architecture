@@ -1,0 +1,425 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>
+    Node系列之stream模块 | 墨眉
+</title>
+<link rel="shortcut icon" href="https://feiyayshx.github.io/web-architecture/favicon.ico?v=1602313375508">
+<!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
+<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://feiyayshx.github.io/web-architecture/styles/main.css">
+<!-- js -->
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://feiyayshx.github.io/web-architecture/media/js/jquery.sticky-sidebar.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+
+
+        
+</head>
+
+<body>
+    <div class="main">
+        <div class="header">
+    <div class="nav">
+        <div class="logo">
+            <a href="https://feiyayshx.github.io/web-architecture">
+                <img class="avatar" src="https://feiyayshx.github.io/web-architecture/images/avatar.png?v=1602313375508" alt="">
+            </a>
+            <div class="site-title">
+                <h1>
+                    墨眉
+                </h1>
+            </div>
+        </div>
+        <span class="menu-btn fa fa-align-justify"></span>
+        <div class="menu-container">
+            <ul>
+                
+                    
+                            <li>
+                                <a href="https://feiyayshx.github.io/web-architecture" class="menu">
+                                    首页
+                                </a>
+                            </li>
+                            
+                                
+                    
+                            <li>
+                                <a href="https://feiyayshx.github.io/web-architecture/archives" class="menu">
+                                    归档
+                                </a>
+                            </li>
+                            
+                                
+                    
+                            <li>
+                                <a href="https://feiyayshx.github.io/web-architecture/tags" class="menu">
+                                    标签
+                                </a>
+                            </li>
+                            
+                                
+                    
+                            <li>
+                                <a href="https://feiyayshx.github.io/web-architecture/post/about" class="menu">
+                                    关于
+                                </a>
+                            </li>
+                            
+                                
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $(".menu-btn").click(function() {
+            $(".menu-container").slideToggle();
+        });
+        $(window).resize(function() {
+
+            if (window.matchMedia('(min-width: 960px)').matches) {
+                $(".menu-container").css('display', 'block')
+            } else {
+                $(".menu-container").css('display', 'none')
+            }
+
+        });
+    });
+</script>
+
+            <div id="main-content" class="post-detail main-container">
+                <!-- left -->
+                <div id="content" class="main-container-left">
+                    <article class="post i-card">
+                        <h2 class="post-title">
+                            Node系列之stream模块
+                        </h2>
+                        <div class="post-info">
+                            <time class="post-time">2020-09-28 16:04</time>
+                            
+                                <a href="https://feiyayshx.github.io/web-architecture/tag/node/" class="post-tag i-tag
+                            i-tag-other_4">
+                            #Node
+                        </a>
+                                
+                        </div>
+                        
+                                <div class="post-content">
+                                    <p>👏 前言： 本文是学习Node时，对其中stream模块学习的一个笔记总结，主要是加强理解！</p>
+<!-- more -->
+<h2 id="1-流的概念">1. 流的概念</h2>
+<p>流(stream)是node.js中处理流式数据的抽象接口。</p>
+<p>stream模块用于构建实现了流接口的对象。</p>
+<p>Node.js 提供了多种流对象，例如，HTTP 服务器的请求和 process.stdout 都是流的实例。</p>
+<p>流可以是可读的、可写的、或者可读可写的。 所有的流都是 EventEmitter 的实例。</p>
+<h2 id="2-node中四种基本的流类型">2. Node中四种基本的流类型</h2>
+<ul>
+<li>
+<p>Writable - 可写入数据的流（例如 fs.createWriteStream()）;</p>
+</li>
+<li>
+<p>Readable - 可读取数据的流（例如 fs.createReadStream()）;</p>
+</li>
+<li>
+<p>Duplex - 可读又可写的流（例如 net.Socket）;</p>
+</li>
+<li>
+<p>Transform - 在读写过程中可以修改或转换数据的 Duplex 流（例如 zlib.createDeflate()）。</p>
+</li>
+</ul>
+<h2 id="3-流的数据模式">3. 流的数据模式</h2>
+<ul>
+<li>
+<p>二进制模式：Node.js 创建的流都是运作在字符串和 Buffer（或 Uint8Array）上;</p>
+</li>
+<li>
+<p>对象模式(object mode)：当创建流时，可以使用 objectMode 选项把流实例切换到对象模式。 将已存在的流切换到对象模式是不安全的</p>
+</li>
+</ul>
+<h2 id="4-可读流的读取模式">4. 可读流的读取模式</h2>
+<p><strong>flowing模式(流动模式)</strong>：可读流自动从系统底层读取数据，并通过EventEmitter接口的事件将数据提供给应用；</p>
+<p><strong>paused模式(暂停模式)</strong>：必须显式调用stream.read()方法从流中读取数据片段；</p>
+<p>所有初始工作模式为paused的Readable流，可以通过三种方式切换到flowing模式：</p>
+<ul>
+<li>监听data事件</li>
+<li>调用stream.resume()</li>
+<li>调用stream.pipe()方法将数据发送到Writeable</li>
+</ul>
+<p>可读流Readable可通过下列方式切换到paused模式：</p>
+<ul>
+<li>如果不存在管道目标（pipe destination），可以通过调用 stream.pause() 方法实现。</li>
+<li>如果存在管道目标，可以通过取消 'data' 事件监听，并调用 stream.unpipe() 方法移除所有管道目标来实现。</li>
+</ul>
+<h2 id="5-可读流的三种状态">5. 可读流的三种状态</h2>
+<p>在任意时刻，可读流应确切处于下面三种状态之一：</p>
+<p><code>readable._readableState.flowing = null</code></p>
+<p><code>readable._readableState.flowing = false</code></p>
+<p><code>readable._readableState.flowing = true</code></p>
+<ul>
+<li>
+<p>若<code>readable._readableState.flowing = null</code>，由于不存在数据消费者，可读流不会产生数据。在此状态下，监听data事件，调用readable.pipe()方法，或者调用readable.resume(),<code>readable._readableState.flowing</code>的值将会变为true, 随着数据生成，可读流开始频繁触发事件。</p>
+</li>
+<li>
+<p>调用<code>readable.pause()</code>,或者<code>readable.unpipe()</code>,或者接收 “背压”（back pressure），将导致 readable._readableState.flowing 值变为 false。这将暂停事件流，但不会暂停数据生成，在这种情况下，为 'data' 事件设置监听函数不会导致 <code>readable._readableState.flowing</code> 变为 true。</p>
+</li>
+<li>
+<p>当 <code>readable._readableState.flowing</code> 值为 false 时， 数据可能堆积到流的内部缓存中。</p>
+</li>
+</ul>
+<h2 id="6-缓冲">6. 缓冲</h2>
+<ul>
+<li>
+<p>可写流和可读流都会在内部的缓冲器中存储数据，可以分别使用的 writable.writableBuffer 或 readable.readableBuffer 来获取。</p>
+</li>
+<li>
+<p>可缓冲的数据大小取决于传入流构造函数的 highWaterMark 选项。 对于普通的流， highWaterMark 指定了字节的总数。 对于对象模式的流， highWaterMark 指定了对象的总数。</p>
+</li>
+<li>
+<p>当调用 stream.push(chunk) 时，数据会被缓冲在可读流中。 如果流的消费者没有调用 stream.read()，则数据会保留在内部队列中直到被消费。</p>
+</li>
+<li>
+<p>一旦内部的可读缓冲的总大小达到 highWaterMark 指定的阈值时，流会暂时停止从底层资源读取数据，直到当前缓冲的数据被消费。</p>
+</li>
+<li>
+<p>当调用 writable.write(chunk) 时，数据会被缓冲在可写流中。 当内部的可写缓冲的总大小小于 highWaterMark 设置的阈值时，调用 writable.write() 会返回 true。 一旦内部缓冲的大小达到或超过 highWaterMark 时，则会返回 false。</p>
+</li>
+<li>
+<p>Duplex 和 Transform 都是可读写的。 在内部，它们都维护了 两个 相互独立的缓冲器用于读和写。 在维持了合理高效的数据流的同时，也使得对于读和写可以独立进行而互不影响。</p>
+</li>
+<li>
+<p>stream API 的关键目标， 尤其对于 stream.pipe() 方法， 就是限制缓冲器数据大小，以达到可接受的程度。这样，对于读写速度不匹配的源头和目标，就不会超出可用的内存大小。</p>
+</li>
+</ul>
+<h2 id="7-自定义可读流">7.  自定义可读流</h2>
+<p>为了实现可读流，继承Readable接口并用它构造新对象</p>
+<pre><code class="language-javascript">
+const { Readable } = require('stream');
+
+class MyRead extends Readable{ // 默认会调用Readable中的read方法
+    _read(){
+        // push方法是Readable中提供的, 调用push将结果放入,就可以触发 on('data事件')
+        this.push('ok'); 
+        // 放入null表示这个流没有更多数据了
+        this.push(null); 
+    }
+}
+
+let mr = new MyRead;
+mr.on('data',function (data) {
+    console.log(data);
+})
+mr.on('end',function () {
+    console.log('end')
+})
+mr.on('open',function () {
+    console.log('open')
+})
+
+</code></pre>
+<h2 id="8-自定义可写流">8. 自定义可写流</h2>
+<p>自定义可写流，继承Writable接口来构造新对象<br>
+_write(chunk,encoding,callback)函数：</p>
+<ul>
+<li>chunk通常是一个buffer，除非我们配置不同的流。</li>
+<li>encoding是在特定情况下需要的参数，通常我们可以忽略它。</li>
+<li>callback是在完成处理数据块后需要调用的函数。这是写数据成功与否的标志。若要发出故障信号，请用错误对象调用回调函数</li>
+</ul>
+<pre><code class="language-javascript">
+const { Writable } = require('stream')
+
+class MyWrite extends Writable {
+  _write(chunk, encoding, cb) {
+    cb();
+  }
+}
+
+let mw = new MyWrite();
+mw.write('ok', function () {
+  console.log('ok')
+})
+mw.write('ab')
+
+</code></pre>
+<h2 id="9-自定义双工流">9. 自定义双工流</h2>
+<p>双工流能读又能写，双工流的可读性和可写性操作完全独立于彼此。这仅仅是将两个特性组合成一个对象。</p>
+<pre><code class="language-javascript">
+const { Duplex } = require('stream');
+class MyDuplex extends Duplex{
+    _read(){
+        this.push('xxx');
+        this.push(null)
+    }
+    _write(chunk,encoding,cb){
+        console.log(chunk);
+        cb() // clearBuffer
+    }
+}
+let md = new MyDuplex();
+md.on('data',function (chunk) {
+    console.log(chunk)
+})
+md.write('ok');
+
+</code></pre>
+<h2 id="10-自定义转换流">10. 自定义转换流</h2>
+<ul>
+<li>
+<p>转换流的输出是从输入中计算出来的。</p>
+</li>
+<li>
+<p>对于转换流，我们不必实现read或write的方法，我们只需要实现一个transform方法，将两者结合起来。它有write功能，也可以用它来push数据。</p>
+</li>
+<li>
+<p>可以用于加密、压缩 ，可以把可写流转换成可读流。</p>
+</li>
+</ul>
+<pre><code class="language-javascript">const { Transform } = require('stream');
+class MyTransfrom extends Transform {
+    _transform(chunk, encoding, cb) {
+        // 这里可以调用push方法
+        this.push(chunk.toString().toUpperCase()); // this.emit()
+        cb();
+    }
+}
+let my = new MyTransfrom();
+process.stdin.on('data',function (chunk) { // 监控用户输入内容
+    process.stdout.write(chunk); 
+})
+process.stdin.pipe(my).pipe(process.stdout)
+// process.std.write('ok'); // console.log() 可写流
+
+</code></pre>
+<h2 id="11-管道流">11. 管道流</h2>
+<pre><code class="language-javascript">
+const stream = require('stream')
+
+var index = 0;
+const readable = stream.Readable({
+    highWaterMark: 2,
+    read: function () {
+        process.nextTick(() =&gt; {
+            console.log('push', ++index)
+            this.push(index+'');
+        })
+    }
+})
+
+const writable = stream.Writable({
+    highWaterMark: 2,
+    write: function (chunk, encoding, next) {
+        console.log('写入:', chunk.toString())
+    }
+})
+
+readable.pipe(writable);
+
+</code></pre>
+
+                                </div>
+                    </article>
+                    <!--  -->
+                    
+                        <div class="next-post">
+                            <div class="next">下一篇</div>
+                            <a href="https://feiyayshx.github.io/web-architecture/post/node-fs/">
+                                <h3 class="post-title">
+                                    Node系列之fs模块
+                                </h3>
+                            </a>
+                        </div>
+                        
+                            <div id="disqus_thread"></div>
+                            <div id="gitalk-container"></div>
+                </div>
+                <!-- middle -->
+                <div class="main-container-middle"></div>
+                <!-- right -->
+                <div id="sidebar" class="main-container-right">
+                    
+                        <!-- toc -->
+                        
+    <div class="toc-card i-card ">
+        <div class="toc-title i-card-title">目录</div>
+        <div class="toc-content">
+            <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#1-%E6%B5%81%E7%9A%84%E6%A6%82%E5%BF%B5">1. 流的概念</a></li>
+<li><a href="#2-node%E4%B8%AD%E5%9B%9B%E7%A7%8D%E5%9F%BA%E6%9C%AC%E7%9A%84%E6%B5%81%E7%B1%BB%E5%9E%8B">2. Node中四种基本的流类型</a></li>
+<li><a href="#3-%E6%B5%81%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%BC%8F">3. 流的数据模式</a></li>
+<li><a href="#4-%E5%8F%AF%E8%AF%BB%E6%B5%81%E7%9A%84%E8%AF%BB%E5%8F%96%E6%A8%A1%E5%BC%8F">4. 可读流的读取模式</a></li>
+<li><a href="#5-%E5%8F%AF%E8%AF%BB%E6%B5%81%E7%9A%84%E4%B8%89%E7%A7%8D%E7%8A%B6%E6%80%81">5. 可读流的三种状态</a></li>
+<li><a href="#6-%E7%BC%93%E5%86%B2">6. 缓冲</a></li>
+<li><a href="#7-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8F%AF%E8%AF%BB%E6%B5%81">7.  自定义可读流</a></li>
+<li><a href="#8-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8F%AF%E5%86%99%E6%B5%81">8. 自定义可写流</a></li>
+<li><a href="#9-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8F%8C%E5%B7%A5%E6%B5%81">9. 自定义双工流</a></li>
+<li><a href="#10-%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E6%8D%A2%E6%B5%81">10. 自定义转换流</a></li>
+<li><a href="#11-%E7%AE%A1%E9%81%93%E6%B5%81">11. 管道流</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+        <script>
+            function locateCatelogList() {
+                /*获取文章目录集合,可通过:header过滤器*/
+                var alis = $('.post-content :header');
+                /*获取侧边栏目录列表集合**/
+                var sidebar_alis = $('.markdownIt-TOC a');
+                /*获取滚动条到顶部的距离*/
+                var scroll_height = $(window).scrollTop();
+                for (var i = 0; i < alis.length; i++) {
+                    /*获取锚点集合中的元素分别到顶点的距离*/
+                    var a_height = $(alis[i]).offset().top;
+                    if (a_height < scroll_height) {
+                        /*高亮显示*/
+                        sidebar_alis.removeClass('on');
+                        $(sidebar_alis[i]).addClass('on');
+                    }
+                }
+            }
+            $(function() {
+                /*绑定滚动事件 */
+                $(window).bind('scroll', locateCatelogList);
+            });
+        </script>
+    </div>
+    
+                            
+
+                </div>
+
+
+
+
+            </div>
+
+
+            <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://feiyayshx.github.io/web-architecture/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+
+    </div>
+    <script>
+        $('#sidebar').stickySidebar({
+            topSpacing: 80,
+            // bottomSpacing: 60
+        });
+    </script>
+    
+</body>
+
+</html>

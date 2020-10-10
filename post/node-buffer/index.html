@@ -5,7 +5,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>
-    Hello Gridea | 墨眉
+    Node系列之认识Buffer | 墨眉
 </title>
 <link rel="shortcut icon" href="https://feiyayshx.github.io/web-architecture/favicon.ico?v=1602313375508">
 <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
@@ -99,47 +99,160 @@
                 <div id="content" class="main-container-left">
                     <article class="post i-card">
                         <h2 class="post-title">
-                            Hello Gridea
+                            Node系列之认识Buffer
                         </h2>
                         <div class="post-info">
-                            <time class="post-time">2018-12-12 00:00</time>
+                            <time class="post-time">2020-09-22 23:16</time>
                             
-                                <a href="https://feiyayshx.github.io/web-architecture/tag/_79HkDk99/" class="post-tag i-tag
-                            i-tag-info">
-                            #Gridea
+                                <a href="https://feiyayshx.github.io/web-architecture/tag/node/" class="post-tag i-tag
+                            i-tag-other_4">
+                            #Node
                         </a>
                                 
                         </div>
                         
-                            <div class="post-feature-image" style="background-image: url('https://feiyayshx.github.io/web-architecture/post-images/hello-gridea.png')"></div>
-                            
                                 <div class="post-content">
-                                    <p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
-✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+                                    <p>👉Buffer 对象用于表示固定长度的字节序列；<br>
+⭐️Buffer 类是JavaScript 的Unit8Array 类的子类，全局变量；</p>
 <!-- more -->
-<p><a href="https://github.com/getgridea/gridea">Github</a><br>
-<a href="https://gridea.dev/">Gridea 主页</a><br>
-<a href="http://fehey.com/">示例网站</a></p>
-<h2 id="特性">特性👇</h2>
-<p>📝  你可以使用最酷的 <strong>Markdown</strong> 语法，进行快速创作</p>
-<p>🌉  你可以给文章配上精美的封面图和在文章任意位置插入图片</p>
-<p>🏷️  你可以对文章进行标签分组</p>
-<p>📋  你可以自定义菜单，甚至可以创建外部链接菜单</p>
-<p>💻  你可以在 <strong>Windows</strong>，<strong>MacOS</strong> 或 <strong>Linux</strong> 设备上使用此客户端</p>
-<p>🌎  你可以使用 <strong>𝖦𝗂𝗍𝗁𝗎𝖻 𝖯𝖺𝗀𝖾𝗌</strong> 或 <strong>Coding Pages</strong> 向世界展示，未来将支持更多平台</p>
-<p>💬  你可以进行简单的配置，接入 <a href="https://github.com/gitalk/gitalk">Gitalk</a> 或 <a href="https://github.com/SukkaW/DisqusJS">DisqusJS</a> 评论系统</p>
-<p>🇬🇧  你可以使用<strong>中文简体</strong>或<strong>英语</strong></p>
-<p>🌁  你可以任意使用应用内默认主题或任意第三方主题，强大的主题自定义能力</p>
-<p>🖥  你可以自定义源文件夹，利用 OneDrive、百度网盘、iCloud、Dropbox 等进行多设备同步</p>
-<p>🌱 当然 <strong>Gridea</strong> 还很年轻，有很多不足，但请相信，它会不停向前 🏃</p>
-<p>未来，它一定会成为你离不开的伙伴</p>
-<p>尽情发挥你的才华吧！</p>
-<p>😘 Enjoy~</p>
+<h2 id="1-buffer-与字符编码">1. Buffer 与字符编码</h2>
+<p>字符编码：</p>
+<ul>
+<li>ASCII编码</li>
+<li>Unicode</li>
+<li>UTF-8</li>
+<li>GBK</li>
+<li>GB2322</li>
+<li>GB18030</li>
+</ul>
+<blockquote>
+<p>一个字节由8个位组成，gbk中一个汉字2个字节，utf8中一个汉字3个字节</p>
+</blockquote>
+<p>Buffer 与字符串之间转换可以指定字符编码，如果未指定，默认是 UTF-8；<br>
+Node支持两种二进制转文本的编码：base64、hex; 不支持GBK编码</p>
+<pre><code class="language-javascript">
+let buffer = Buffer.from('hello node','utf8')
+console.log(buffer.toString('base64'))
+
+</code></pre>
+<h2 id="2-buffer的三种定义方法">2. Buffer的三种定义方法</h2>
+<ul>
+<li>Buffer 声明后大小固定，不可随意更改大小，可以再声明一个空间将结果拷贝进去；</li>
+<li>可以通过索引更改buffer内容；</li>
+</ul>
+<pre><code class="language-javascript">
+// buffer1声明的字节数是4，&lt;Buffer 00 00 00 00&gt;
+let buffer1 = Buffer.alloc(4) 
+
+// buffer2的长度是9个字节，&lt;Buffer e5 a4 a7 e5 89 8d e7 ab af&gt;
+let buffer2 = Buffer.from('大前端') 
+
+// buffer3长度是array的元素数目，&lt;Buffer 01 02 03 04&gt;
+let buffer3 = Buffer.from([1, 2, 3, 4]) 
+
+</code></pre>
+<h2 id="3-buffer的常用方法">3. Buffer的常用方法</h2>
+<pre><code class="language-javascript">
+buff.toString()
+buff.fill()
+buff.slice()
+buff.copy
+Buffer.concat()
+Buffer.isBuffer()
+
+</code></pre>
+<p><strong>Buffer.concat() 方法的实现</strong></p>
+<pre><code class="language-javascript">
+Buffer.concat = function (bufferList, length = bufferList.reduce((a,b)=&gt;a+b.length,0) {
+    let buf = Buffer.alloc(length);
+    let offset = 0
+    bufferList.forEach(bufItem =&gt; {
+        bufItem.copy(buf,offset);
+        offset += bufItem.length;
+    });
+    return buf.slice(0,offset)
+}
+
+/* 用法 */
+let buffer1 = Buffer.from('喜马拉雅');
+let buffer2 = Buffer.from('hello');
+const newBuffer = Buffer.concat([buffer1,buffer2],20)
+console.log(newBuffer)
+console.log(Buffer.isBuffer(newBuffer))
+
+</code></pre>
+<p><strong>buf.copy() 方法的实现</strong></p>
+<p><code>buf.copy(target,targetStart,sourceStart,sourceEnd)</code></p>
+<ul>
+<li><code>target</code>: 要拷贝进的Buffer</li>
+<li><code>targetStart</code>: target 中开始写入之前要跳过的字节数; 默认值: 0。</li>
+<li><code>sourceStart</code>: buf 中开始拷贝的偏移量; 默认值: 0。</li>
+<li><code>sourceEnd</code>: buf 中结束拷贝的偏移量（不包含）; 默认值: buf.length。</li>
+</ul>
+<pre><code class="language-javascript">
+Buffer.prototype.copy = function(targetBuffer,targetStart,sourceStart,sourceEnd){
+  for(let i=sourceStart;i&lt;sourceEnd;i++){
+    targetBuffer[targetStart++]=this[i];
+  }
+}
+
+/* 用法 */
+var buf = Buffer.alloc(12);
+var buffer1 = Buffer.from('天天');
+var buffer2 = Buffer.from('向上');
+buffer1.copy(buf, 0, 0, 6)
+buffer2.copy(buf, 6, 0, 6)
+console.log(buf)
+
+</code></pre>
+<p><strong>buf.split() 方法的实现</strong></p>
+<p><code>buf.split(separator)</code></p>
+<ul>
+<li><code>separator</code>: 分隔符，将buffer 按分隔符分割组装成数组</li>
+</ul>
+<pre><code class="language-javascript">
+Buffer.prototype.split = function(sep){ // slice + indexOf = split
+  let arr = [];
+  let len = Buffer.from(sep).length; //  分割符号的长度
+  let offset = 0;
+  let current;
+  while(-1!=(current = this.indexOf(sep,offset))){
+      // 找到的位置 加上偏移量
+      arr.push(this.slice(offset,current));
+      offset = current+len;
+  }
+  arr.push(this.slice(offset));
+  return arr;
+}
+
+/* 用法 */
+let buffer = Buffer.from('hello&amp;node&amp;js','utf8')
+let bufArr = buffer.split('&amp;')
+
+// [ &lt;Buffer 68 65 6c 6c 6f&gt;, &lt;Buffer 6e 6f 64 65&gt;, &lt;Buffer 6a 73&gt; ]
+console.log(bufArr) 
+
+// 迭代buffer
+for(let item of bufArr) {
+    // hello node js
+  console.log(item.toString())
+}
+
+</code></pre>
 
                                 </div>
                     </article>
                     <!--  -->
                     
+                        <div class="next-post">
+                            <div class="next">下一篇</div>
+                            <a href="https://feiyayshx.github.io/web-architecture/post/decimal-binary-conversion/">
+                                <h3 class="post-title">
+                                    Javascript之进制转换
+                                </h3>
+                            </a>
+                        </div>
+                        
                             <div id="disqus_thread"></div>
                             <div id="gitalk-container"></div>
                 </div>
@@ -156,7 +269,9 @@
             <ul class="markdownIt-TOC">
 <li>
 <ul>
-<li><a href="#%E7%89%B9%E6%80%A7">特性👇</a></li>
+<li><a href="#1-buffer-%E4%B8%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81">1. Buffer 与字符编码</a></li>
+<li><a href="#2-buffer%E7%9A%84%E4%B8%89%E7%A7%8D%E5%AE%9A%E4%B9%89%E6%96%B9%E6%B3%95">2. Buffer的三种定义方法</a></li>
+<li><a href="#3-buffer%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95">3. Buffer的常用方法</a></li>
 </ul>
 </li>
 </ul>

@@ -1,0 +1,767 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>
+    Node系列之fs模块 | 墨眉
+</title>
+<link rel="shortcut icon" href="https://feiyayshx.github.io/web-architecture/favicon.ico?v=1602313375508">
+<!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
+<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://feiyayshx.github.io/web-architecture/styles/main.css">
+<!-- js -->
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://feiyayshx.github.io/web-architecture/media/js/jquery.sticky-sidebar.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+
+
+        
+</head>
+
+<body>
+    <div class="main">
+        <div class="header">
+    <div class="nav">
+        <div class="logo">
+            <a href="https://feiyayshx.github.io/web-architecture">
+                <img class="avatar" src="https://feiyayshx.github.io/web-architecture/images/avatar.png?v=1602313375508" alt="">
+            </a>
+            <div class="site-title">
+                <h1>
+                    墨眉
+                </h1>
+            </div>
+        </div>
+        <span class="menu-btn fa fa-align-justify"></span>
+        <div class="menu-container">
+            <ul>
+                
+                    
+                            <li>
+                                <a href="https://feiyayshx.github.io/web-architecture" class="menu">
+                                    首页
+                                </a>
+                            </li>
+                            
+                                
+                    
+                            <li>
+                                <a href="https://feiyayshx.github.io/web-architecture/archives" class="menu">
+                                    归档
+                                </a>
+                            </li>
+                            
+                                
+                    
+                            <li>
+                                <a href="https://feiyayshx.github.io/web-architecture/tags" class="menu">
+                                    标签
+                                </a>
+                            </li>
+                            
+                                
+                    
+                            <li>
+                                <a href="https://feiyayshx.github.io/web-architecture/post/about" class="menu">
+                                    关于
+                                </a>
+                            </li>
+                            
+                                
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $(".menu-btn").click(function() {
+            $(".menu-container").slideToggle();
+        });
+        $(window).resize(function() {
+
+            if (window.matchMedia('(min-width: 960px)').matches) {
+                $(".menu-container").css('display', 'block')
+            } else {
+                $(".menu-container").css('display', 'none')
+            }
+
+        });
+    });
+</script>
+
+            <div id="main-content" class="post-detail main-container">
+                <!-- left -->
+                <div id="content" class="main-container-left">
+                    <article class="post i-card">
+                        <h2 class="post-title">
+                            Node系列之fs模块
+                        </h2>
+                        <div class="post-info">
+                            <time class="post-time">2020-09-28 09:47</time>
+                            
+                                <a href="https://feiyayshx.github.io/web-architecture/tag/node/" class="post-tag i-tag
+                            i-tag-warning">
+                            #Node
+                        </a>
+                                
+                        </div>
+                        
+                                <div class="post-content">
+                                    <p>👏 fs模块用于与文件系统交互，所有的文件系统操作都具有同步的、回调的、以及基于 promise 的形式。</p>
+<!-- more -->
+<h2 id="相关名词">相关名词</h2>
+<ul>
+<li>文件描述符</li>
+</ul>
+<h2 id="fs方法">fs方法</h2>
+<ul>
+<li>fs.copyFile()</li>
+<li>fs.access()</li>
+</ul>
+<h2 id="文件拷贝简单版">文件拷贝(简单版)</h2>
+<ul>
+<li>fs 操作接受的文件路径可以是字符串、Buffer,或URL对象;</li>
+<li>如果读取文件，读到的结果默认是buffer类型;</li>
+<li>写入的时候 会清空文件内容，并且以utf8格式类型写入;</li>
+</ul>
+<pre><code class="language-javascript">
+// 将文件homework.js中的内容拷贝到demo.js中
+const fs = require('fs')
+const path = require('path')
+fs.readFile(path.resolve(__dirname,'homework.js'),function(err,data) {
+  fs.appendFile(path.resolve(__dirname,'demo.js'),data,function(err){
+    console.log('copy finished')
+  })
+})
+
+</code></pre>
+<blockquote>
+<p>注意：运行时如果用相对路径，会以process.cwd() 来切换路径，可能会导致不同路径下运行结果不同。故使用绝对路径。</p>
+</blockquote>
+<p><strong>缺点:</strong></p>
+<ul>
+<li>读取文件时，读取的内容放在内存中，如果文件过大会浪费内存，淹没可用内存，大型文件不能采用此方式操作；一般64kb 以上的文件实现拷贝尽量不要使用readFile方法。</li>
+</ul>
+<h2 id="文件拷贝改进版">文件拷贝(改进版)</h2>
+<p>简单版的文件拷贝不适合读取大文件，容易造成内存浪费; 对于读取大型文件的场景，需要分段读取文件，实现读取一点写入一点；核心方法有：fs.open()、fs.read()、fs.write()、fs.close()。</p>
+<pre><code class="language-javascript">
+const fs = require('fs')
+function copyFile(source, target, callback) {
+  const BUFFER_LENGTH = 6
+  let readPosition = 0
+  let writePosition = 0
+  const buffer = Buffer.alloc(BUFFER_LENGTH)
+  // 打开文件，读取内容
+  fs.open(source, 'r', function (err, rfd) {
+    // 打开文件，写入内容
+    fs.open(target, 'w', function (err, wfd) {
+      function copy() {
+        fs.read(rfd, buffer, 0, BUFFER_LENGTH, readPosition, function (err, bytesRead) {
+          // 读取到的实际字节数
+          if (err) return callback(err)
+          if (bytesRead) {
+            // 将读取的数据写入文件
+            fs.write(wfd, buffer, 0, bytesRead, writePosition, function (err, written) {
+              readPosition += bytesRead
+              writePosition += bytesRead
+              copy();
+            })
+          } else {
+            fs.close(rfd, () =&gt; { })
+            fs.close(wfd, () =&gt; { })
+            callback()
+          }
+        })
+      }
+      copy()
+    })
+  })
+}
+
+/*---------功能测试----------*/
+copyFile('./3.fs.js', './demo.js', function () {
+  console.log('copy finished')
+})
+
+</code></pre>
+<h2 id="文件拷贝终极版">文件拷贝(终极版)</h2>
+<p>文件拷贝的终极版是对改进版的一种优化；fs 基于流封装了文件的可读流方法fs.createReadStream和可写流方法fs.createWriteStream。</p>
+<h3 id="fscreatereadstream-可读流内部实现过程及用法">fs.createReadStream 可读流内部实现过程及用法</h3>
+<p>实现了stream.Readable接口的对象，将对象数据读取为流数据；</p>
+<ul>
+<li>
+<ol>
+<li>内部调用 new ReadStream, 继承于Readable接口；</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>先进行数据格式化；</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>默认打开文件，ReadStream.prototype.read</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Readable.prototype.read -&gt;  ReadStream.prototype._read</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p>想基于Readable接口实现自己的可读流 你需要自己去实现一个_read方法，默认开始读取时会去调用此方法.<br>
+可读流对象 必须有on('data') on('end')  , 文件流会提供两个方法 open/close<br>
+控制读取速率 rs.pause rs.resume</p>
+</blockquote>
+<h4 id="创建可读流">创建可读流</h4>
+<pre><code class="language-javascript">
+const fs = require('fs')
+const path = require('path')
+
+let readStream = fs.createReadStream(path.resolve(__dirname, 'demo.md'), {
+  flags: 'r', // 可读性标识，默认值'r',读取文件
+  encoding: null, // 编码，默认null
+  autoClose: false, // 读取完毕后自动关闭，默认true
+  start: 0, // 从文件中指定开始位置读取，包括该位置
+  end: 4,   // 指定读取文件的结束位置，包括该位置
+  highWaterMark: 2 // 每次读取的字节数，默认64 * 1024 个字节
+
+})
+
+</code></pre>
+<h4 id="监听data事件">监听data事件</h4>
+<p>流切换到流动模式,数据会被尽可能快的读出</p>
+<pre><code class="language-javascript">
+let arr = []
+// 默认一旦监听data事件，会不停触发data方法
+readStream.on('data', function (chunk) {
+  arr.push(chunk)
+})
+</code></pre>
+<h4 id="监听end事件">监听end事件</h4>
+<p>数据读取完毕，触发end事件</p>
+<pre><code class="language-javascript">
+readStream.on('end', function () {
+  console.log(Buffer.concat(arr), '文件读取完毕！')
+})
+</code></pre>
+<h4 id="监听error事件">监听error事件</h4>
+<pre><code class="language-javascript">
+readStream.on('error', function (err) {
+  console.log(err)
+})
+</code></pre>
+<h4 id="监听open事件">监听open事件</h4>
+<pre><code class="language-javascript">
+readStream.on('open', function (fd) {
+  console.log(fd, 'open 打开文件')
+})
+</code></pre>
+<h4 id="监听colse事件">监听colse事件</h4>
+<pre><code class="language-javascript">
+readStream.on('close',function(){
+  console.log('close 关闭文件')
+})
+</code></pre>
+<h4 id="设置编码">设置编码</h4>
+<p><code>readStream.setEncoding('utf8')</code></p>
+<h4 id="暂停和恢复触发data">暂停和恢复触发data</h4>
+<pre><code class="language-javascript">
+readStream.on('data', function (data) {
+    readStream.pause();  // 暂停读取
+    console.log(data);
+});
+setTimeout(function () {
+    readStream.resume(); // 读取
+},2000);
+</code></pre>
+<h3 id="fscreatewritestream-可写流用法">fs.createWriteStream 可写流用法</h3>
+<p>实现了stream.Writeable 接口对象，将流数据写入到对象中</p>
+<h4 id="创建可写流">创建可写流</h4>
+<pre><code class="language-javascript">
+const fs = require('fs');
+const path = require('path');
+
+const ws = fs.createWriteStream(path.resolve(__dirname, 'test.txt'),{
+    flags:'w',
+    encoding:'utf8',
+    autoClose:true,
+    highWaterMark: 2// 默认写的水位线是16k
+});
+
+</code></pre>
+<h4 id="write-方法">write() 方法</h4>
+<p><code>ws.write(chunk,[encoding],[callback])</code></p>
+<ul>
+<li>chunk: string/buffer</li>
+<li>encoding: 编码格式chunk为字符串时有用，可选</li>
+<li>callback: 写入成功后的回调</li>
+</ul>
+<blockquote>
+<p>返回值为布尔值，系统缓存区满时为false,未满时为true</p>
+</blockquote>
+<h4 id="end-方法">end() 方法</h4>
+<p><code>ws.end(chunk,[encoding],[callback])</code><br>
+可以在关闭流之前再写入一段数据 如果传入了可选的 callback 函数，它将作为 'finish' 事件的回调函数;</p>
+<h4 id="drain-方法">drain() 方法</h4>
+<ul>
+<li>当流不处在drain状态时，对write()的调用会缓存数据块，返回false;当前所有缓存的数据块都清空后，会触发drain()事件；</li>
+</ul>
+<pre><code class="language-javascript">
+let fs = require('fs');
+let ws = fs.createWriteStream('./demo.md',{
+  flags:'w',
+  encoding:'utf8',
+  highWaterMark:3
+});
+let i = 10;
+function write(){
+ let  flag = true;
+ while(i&amp;&amp;flag){
+      flag = ws.write(&quot;1&quot;);
+      i--;
+     console.log(flag);
+ }
+}
+write();
+ws.on('drain',()=&gt;{
+  console.log(&quot;drain&quot;);
+  write();
+});
+
+</code></pre>
+<h4 id="finish-方法">finish() 方法</h4>
+<p>在调用了 stream.end() 方法，且缓冲区数据都已经传给底层系统之后， 'finish' 事件将被触发。</p>
+<pre><code class="language-javascript">
+for (let i = 0; i &lt; 100; i++) {
+  ws.write(`hello, ${i}!\n`);
+}
+ws.end('结束\n');
+ws.on('finish', () =&gt; {
+  console.error('所有的写入已经完成!');
+});
+
+</code></pre>
+<h3 id="借助fs模块提供的可读流与可写流方法实现拷贝">借助fs模块提供的可读流与可写流方法实现拷贝</h3>
+<pre><code class="language-javascript">
+const fs = require('fs')
+let readStream = fs.createReadStream('./3.fs.js', { highWaterMark: 4 })
+let writeStream = fs.createWriteStream('./demo.js', { highWaterMark: 2 })
+readStream.pipe(writeStream)
+
+</code></pre>
+<h2 id="文件可读流的简单实现">文件可读流的简单实现</h2>
+<pre><code class="language-javascript">
+const fs = require('fs');
+const EventEmitter = require('events')
+class ReadStream extends EventEmitter {
+  constructor(path, options = {}) {
+    super()
+    this.path = path;
+    this.flags = options.flags || 'r';
+    this.encoding = options.encoding || null;
+    if (typeof options.autoClose == &quot;undefined&quot;) {
+      this.autoClose = true
+    } else {
+      this.autoClose = options.autoClose
+    }
+    this.start = options.start || 0;
+    this.end = options.end || undefined;
+    this.highWaterMark = options.highWaterMark || 64 * 1024;
+    this.open(); // 默认就调用开启事件
+    this.offset = this.start; // offset 可以根据每次读取的位置发生变化 
+    this.flowing = false; // 默认就是非流动模式
+    this.on('newListener', (type) =&gt; {
+      if (type == 'data') { // 说明用户监听了data事件
+        this.flowing = true;
+
+        this.read(); // 读取吧
+      }
+    });
+  }
+  pipe(ws) {
+    this.on('data', (chunk) =&gt; {
+      let flag = ws.write(chunk);
+      if (!flag) {
+        this.pause();
+      }
+    })
+    ws.on('drain', () =&gt; {
+      this.resume();
+    })
+  }
+  pause() {
+    this.flowing = false;
+  }
+  resume() {
+    if (!this.flowing) {
+      this.flowing = true;
+      this.read(); // 继续读取
+    }
+  }
+  open() {
+    fs.open(this.path, this.flags, (err, fd) =&gt; {
+      if (err) {
+        return this.emit('error', err)
+      }
+      this.fd = fd; // 将文件描述符保存起来
+      this.emit('open', fd)
+    })
+  }
+  read() {
+    if (typeof this.fd != 'number') { // 保证fd 一定存在，不能存在就等会 什么时候存在再用 
+      return this.once('open', () =&gt; this.read())
+    }
+    // fd 一定存在了, buffer是内存 内存是引用类型
+
+    const buffer = Buffer.alloc(this.highWaterMark);
+    let howMuchToRead = this.end ? Math.min((this.end - this.offset + 1), this.highWaterMark) : this.highWaterMark; // 真正要读取的个数
+    fs.read(this.fd, buffer, 0, howMuchToRead, this.offset, (err, bytesRead) =&gt; { // 真正读取到的个数
+      if (bytesRead) {
+        this.offset += bytesRead; // 每次读到后就累加,方便下次继续读取
+        this.emit('data', buffer.slice(0, bytesRead))
+        if (this.flowing) {
+          this.read();
+        }
+      } else {
+        this.emit('end');
+        if (this.autoClose) {
+          fs.close(this.fd, () =&gt; {
+            this.emit('close');
+          })
+        }
+      }
+    })
+  }
+}
+module.exports = ReadStream;
+
+fs.createReadStream = function(path, options) {
+  return new ReadStream(path, options);
+};
+
+</code></pre>
+<h2 id="文件可写流的简单实现">文件可写流的简单实现</h2>
+<ul>
+<li>用链表可以实现栈或者队列， 从头部获取数据性能较高；</li>
+<li>第一次写入操作是向文件中写入 ，后续的操作都缓存到链表中；</li>
+</ul>
+<pre><code class="language-javascript">
+const EventEmitter = require('events');
+const fs = require('fs');
+const Queue = require('./Queue');
+class WriteStream extends EventEmitter {
+  constructor(path, options = {}) {
+    super(options);
+    this.path = path;
+    this.flags = options.flags || 'w';
+    this.encoding = options.encoding || 'utf8';
+    this.autoClose = options.autoClose || true;
+    this.highWaterMark = options.highWaterMark || 16 * 1024;
+    this.open();
+
+    // 要判断是第一次写入 还是第二次写入
+    this.writing = false; // 用来描述当前是否有正在写入的操作
+    this.len = 0; // 需要的统计的长度
+    this.needDrain = false;// 默认是否触发drain事件
+    this.offset = 0; // 每次写入时的偏移量
+    this.cache = new Queue// 用来实现缓存的
+  }
+  write(chunk, encoding = this.encoding, cb = () =&gt; { }) { // 用户调用的write方法
+    // 判断时真的写入 还是放到缓存中
+    // 用户调用write时 写入的数据可能时stringOrBuffer
+    chunk = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)
+    this.len += chunk.length;
+    let ret = this.len &lt; this.highWaterMark;
+    if (!ret) { // 达到预期或者超过预期 就改变触发drian事件
+      this.needDrain = true;
+    }
+    if (this.writing) { // 如果正在写入就先存起来 稍后再去写入
+      this.cache.offer({ //f
+        chunk,
+        encoding,
+        cb
+      })
+    } else {
+      this.writing = true;// 标识为正在写入
+      this._write(chunk, encoding, () =&gt; { // z
+        cb(); // 用户本来的回调要执行
+        this.clearBuffer();
+      });
+    }
+    return ret
+  }
+  clearBuffer() { // 对个异步并发 可以考队列来实现 依次清空
+    let data = this.cache.poll();
+    if (data) {
+      let { chunk, encoding, cb } = data;
+      this._write(chunk, encoding, () =&gt; {
+        cb();
+        this.clearBuffer();
+      })
+    } else {
+      this.writing = false;// 缓存中的内容也写入了 清空缓存
+      if (this.needDrain) {
+        this.needDrain = false;
+        this.emit('drain');
+      }
+    }
+  }
+  open() {
+    fs.open(this.path, this.flags, (err, fd) =&gt; {
+      if (err) return this.emit('error', err);
+      this.fd = fd;
+      this.emit('open', fd);
+    })
+  }
+  _write(chunk, encoding, cb) { // fs.write =&gt; doWrite
+    if (typeof this.fd !== 'number') {
+      return this.once('open', () =&gt; this._write(chunk, encoding, cb))
+    }
+    fs.write(this.fd, chunk, 0, chunk.length, this.offset, (err, written) =&gt; {
+      this.len -= written;
+      this.offset += written;
+      cb();
+    })
+  }
+}
+module.exports = WriteStream
+
+fs.createWriteStream = function(path, options) {
+  return new WriteStream(path, options);
+};
+
+// 实现读一点 （on('data') on('end') pause resume） 写一点   (write,end)
+
+</code></pre>
+<h2 id="手写实现一个链表">手写实现一个链表</h2>
+<pre><code class="language-javascript">
+class Node {
+    constructor(element, next) {
+        this.element = element;
+        this.next = next;
+    }
+}
+class LinkedList {
+    constructor() {
+        this.head = null;
+        this.size = 0;
+    }
+    add(index, element) { // 增加节点
+        if (arguments.length == 1) {
+            element = index;
+            index = this.size
+        }
+        if (index &lt; 0 || index &gt; this.size) throw new Error('链表索引异常');
+
+        if (index == 0) {
+            let head = this.head; // 老的头
+            this.head = new Node(element, head);
+        } else {
+            let prevNode = this.getNode(index - 1); // 这里前面节点肯定有，如果没有会走if
+            prevNode.next = new Node(element, prevNode.next);
+        }
+        this.size++;
+    }
+    remove(index) { // 删除节点
+        if(this.size == 0) return null
+        let oldNode;
+        if (index == 0) {
+            oldNode = this.head;
+            this.head = oldNode &amp;&amp; oldNode.next;
+        } else {
+            let prevNode = this.getNode(index-1); // 获取当前的前一个节点 
+            oldNode = prevNode.next; // 前一个的下一个就是要删除的 
+            prevNode.next = oldNode.next; // 让前一个下一个 执行 之前的下一个
+        }
+        this.size--;
+        return oldNode.element; // 返回删除元素
+    }
+    getNode(index) { // 获取节点
+        let current = this.head; // 从头找
+        for (let i = 0; i &lt; index; i++) {
+            current = current.next;
+        }
+        return current;
+    }
+    length() { // 链表的总个数
+        return this.size
+    }
+    reverseLinkedList2(){
+        function reverse(head){ // 先递归最里面的，在出来
+            // 如果链表为空 或者没有下一个了 就不用反转了
+            if(head == null || head.next == null) return head;
+            let newHead = reverse(head.next); // 将原来的下一个变成头结点
+            head.next.next = head; // 让下一个节点的下一个指向原来的头
+            head.next = null; // 让老头指向null
+            return newHead
+        }   
+        this.head = reverse(this.head)
+        return this.head;
+    }
+    reverseLinkedList(){
+        let head = this.head; // 保留老头
+        if(head == null || head.next == null) return head;
+        let newHead = null; // 新的链表头部默认指向null
+        while(head!==null){ // 循环老的链表 将内容依次的取出使用
+            let temp = head.next; // 存储的是100 
+            head.next = newHead;  // 让老的头指向新的头
+            newHead = head; // 新的头指向了老的头 
+            head = temp; // 老的头向后移动
+        }
+        this.head = newHead;
+        return this.head
+    }
+}
+module.exports = LinkedList
+
+</code></pre>
+<h2 id="基于链表封装队列">基于链表封装队列</h2>
+<pre><code class="language-javascript">
+let LinkedList = require('./LinkedList');
+class Queue{ // 队列是添加和删除
+    constructor(){
+        this.ll = new LinkedList();
+    }
+    offer(element){ // 入队列
+        this.ll.add(element);
+    }
+    poll(){
+        return this.ll.remove(0);
+    }
+}
+module.exports = Queue;
+
+</code></pre>
+
+                                </div>
+                    </article>
+                    <!--  -->
+                    
+                        <div class="next-post">
+                            <div class="next">下一篇</div>
+                            <a href="https://feiyayshx.github.io/web-architecture/post/node-buffer/">
+                                <h3 class="post-title">
+                                    Node系列之认识Buffer
+                                </h3>
+                            </a>
+                        </div>
+                        
+                            <div id="disqus_thread"></div>
+                            <div id="gitalk-container"></div>
+                </div>
+                <!-- middle -->
+                <div class="main-container-middle"></div>
+                <!-- right -->
+                <div id="sidebar" class="main-container-right">
+                    
+                        <!-- toc -->
+                        
+    <div class="toc-card i-card ">
+        <div class="toc-title i-card-title">目录</div>
+        <div class="toc-content">
+            <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E7%9B%B8%E5%85%B3%E5%90%8D%E8%AF%8D">相关名词</a></li>
+<li><a href="#fs%E6%96%B9%E6%B3%95">fs方法</a></li>
+<li><a href="#%E6%96%87%E4%BB%B6%E6%8B%B7%E8%B4%9D%E7%AE%80%E5%8D%95%E7%89%88">文件拷贝(简单版)</a></li>
+<li><a href="#%E6%96%87%E4%BB%B6%E6%8B%B7%E8%B4%9D%E6%94%B9%E8%BF%9B%E7%89%88">文件拷贝(改进版)</a></li>
+<li><a href="#%E6%96%87%E4%BB%B6%E6%8B%B7%E8%B4%9D%E7%BB%88%E6%9E%81%E7%89%88">文件拷贝(终极版)</a>
+<ul>
+<li><a href="#fscreatereadstream-%E5%8F%AF%E8%AF%BB%E6%B5%81%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E8%BF%87%E7%A8%8B%E5%8F%8A%E7%94%A8%E6%B3%95">fs.createReadStream 可读流内部实现过程及用法</a>
+<ul>
+<li><a href="#%E5%88%9B%E5%BB%BA%E5%8F%AF%E8%AF%BB%E6%B5%81">创建可读流</a></li>
+<li><a href="#%E7%9B%91%E5%90%ACdata%E4%BA%8B%E4%BB%B6">监听data事件</a></li>
+<li><a href="#%E7%9B%91%E5%90%ACend%E4%BA%8B%E4%BB%B6">监听end事件</a></li>
+<li><a href="#%E7%9B%91%E5%90%ACerror%E4%BA%8B%E4%BB%B6">监听error事件</a></li>
+<li><a href="#%E7%9B%91%E5%90%ACopen%E4%BA%8B%E4%BB%B6">监听open事件</a></li>
+<li><a href="#%E7%9B%91%E5%90%ACcolse%E4%BA%8B%E4%BB%B6">监听colse事件</a></li>
+<li><a href="#%E8%AE%BE%E7%BD%AE%E7%BC%96%E7%A0%81">设置编码</a></li>
+<li><a href="#%E6%9A%82%E5%81%9C%E5%92%8C%E6%81%A2%E5%A4%8D%E8%A7%A6%E5%8F%91data">暂停和恢复触发data</a></li>
+</ul>
+</li>
+<li><a href="#fscreatewritestream-%E5%8F%AF%E5%86%99%E6%B5%81%E7%94%A8%E6%B3%95">fs.createWriteStream 可写流用法</a>
+<ul>
+<li><a href="#%E5%88%9B%E5%BB%BA%E5%8F%AF%E5%86%99%E6%B5%81">创建可写流</a></li>
+<li><a href="#write-%E6%96%B9%E6%B3%95">write() 方法</a></li>
+<li><a href="#end-%E6%96%B9%E6%B3%95">end() 方法</a></li>
+<li><a href="#drain-%E6%96%B9%E6%B3%95">drain() 方法</a></li>
+<li><a href="#finish-%E6%96%B9%E6%B3%95">finish() 方法</a></li>
+</ul>
+</li>
+<li><a href="#%E5%80%9F%E5%8A%A9fs%E6%A8%A1%E5%9D%97%E6%8F%90%E4%BE%9B%E7%9A%84%E5%8F%AF%E8%AF%BB%E6%B5%81%E4%B8%8E%E5%8F%AF%E5%86%99%E6%B5%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0%E6%8B%B7%E8%B4%9D">借助fs模块提供的可读流与可写流方法实现拷贝</a></li>
+</ul>
+</li>
+<li><a href="#%E6%96%87%E4%BB%B6%E5%8F%AF%E8%AF%BB%E6%B5%81%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0">文件可读流的简单实现</a></li>
+<li><a href="#%E6%96%87%E4%BB%B6%E5%8F%AF%E5%86%99%E6%B5%81%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0">文件可写流的简单实现</a></li>
+<li><a href="#%E6%89%8B%E5%86%99%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E9%93%BE%E8%A1%A8">手写实现一个链表</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8E%E9%93%BE%E8%A1%A8%E5%B0%81%E8%A3%85%E9%98%9F%E5%88%97">基于链表封装队列</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+        <script>
+            function locateCatelogList() {
+                /*获取文章目录集合,可通过:header过滤器*/
+                var alis = $('.post-content :header');
+                /*获取侧边栏目录列表集合**/
+                var sidebar_alis = $('.markdownIt-TOC a');
+                /*获取滚动条到顶部的距离*/
+                var scroll_height = $(window).scrollTop();
+                for (var i = 0; i < alis.length; i++) {
+                    /*获取锚点集合中的元素分别到顶点的距离*/
+                    var a_height = $(alis[i]).offset().top;
+                    if (a_height < scroll_height) {
+                        /*高亮显示*/
+                        sidebar_alis.removeClass('on');
+                        $(sidebar_alis[i]).addClass('on');
+                    }
+                }
+            }
+            $(function() {
+                /*绑定滚动事件 */
+                $(window).bind('scroll', locateCatelogList);
+            });
+        </script>
+    </div>
+    
+                            
+
+                </div>
+
+
+
+
+            </div>
+
+
+            <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://feiyayshx.github.io/web-architecture/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+
+    </div>
+    <script>
+        $('#sidebar').stickySidebar({
+            topSpacing: 80,
+            // bottomSpacing: 60
+        });
+    </script>
+    
+</body>
+
+</html>
