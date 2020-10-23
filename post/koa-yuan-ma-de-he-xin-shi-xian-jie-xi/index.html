@@ -5,7 +5,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>
-    关于 | 墨眉
+    Koa 核心源码的简单实现 | 墨眉
 </title>
 <link rel="shortcut icon" href="https://feiyayshx.github.io/web-architecture/favicon.ico?v=1603177989719">
 <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
@@ -99,21 +99,180 @@
                 <div id="content" class="main-container-left">
                     <article class="post i-card">
                         <h2 class="post-title">
-                            关于
+                            Koa 核心源码的简单实现
                         </h2>
                         <div class="post-info">
-                            <time class="post-time">2019-01-25 19:09</time>
+                            <time class="post-time">2020-10-12 17:58</time>
                             
                         </div>
                         
                                 <div class="post-content">
-                                    <blockquote>
-<p>欢迎来到我的小站呀，很高兴遇见你！🤝</p>
-</blockquote>
-<h2 id="关于本站">🏠 关于本站</h2>
-<h2 id="博主是谁">👨‍💻 博主是谁</h2>
-<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
-<h2 id="联系我呀">📬 联系我呀</h2>
+                                    <p>👏hello,我又来了，今天这篇文章主要</p>
+<pre><code class="language-javascript">
+/* server.js 代码*/
+app.use(function (ctx) {
+
+  /* 原生req */
+  console.log(ctx.req.url,'req')
+  // console.log(ctx.request.req.url,'request.req')
+
+  /* koa封装的req */
+  // console.log(ctx.path, 'path')
+  // console.log(ctx.request.path, 'request.path')
+
+  // ctx.body = 'hello koa'
+
+  ctx.res.end('hello')
+
+})
+app.listen(3000)
+
+/* application.js 代码 */ 
+const http = require('http')
+class Application {
+  use(fn) {
+    this.fn = fn
+  }
+  handleRequest(req,res) {
+    let ctx = {}
+    ctx.req = req
+    ctx.res = res
+    this.fn(ctx)
+  }
+  listen(...args) {
+    console.log(args,'args')
+    const server = http.createServer(this.handleRequest.bind(this))
+    server.listen(...args)
+  }
+}
+
+module.exports = Application
+</code></pre>
+<pre><code class="language-javascript">/* application.js */
+const http = require('http')
+const context = require('./context.js')
+const request = require('./request.js')
+const response = require('./response.js')
+
+class Application {
+  constructor() {
+    // super();
+    // 创建koa应用的context对象，并继承于context
+    this.context = Object.create(context)
+    // 创建koa应用的request对象，并继承于request
+    this.request = Object.create(request)
+    // 创建koa应用的response对象，并继承于response
+    this.response = Object.create(response)
+  }
+  use(fn) {
+    this.fn = fn
+  }
+  // 给koa应用的每个请求创建一个上下文
+  createContext(req,res) {
+    // 创建http请求的context对象，并继承于this.context
+    let ctx = Object.create(this.context)
+    // 创建http请求的request对象，并继承于this.request
+    let request = Object.create(this.request)
+    // 创建http请求的response对象，并继承于this.response
+    let response = Object.create(this.response)
+
+    // request,response 是koa自己封装的对象
+    ctx.request = request
+    ctx.response = response
+
+    // req,res 是http原生对象
+    ctx.request.req = ctx.req = req
+    ctx.response.res = ctx.res = res
+
+    return ctx
+  }
+  // http 回调处理
+  handleRequest(req, res) {
+    let ctx = this.createContext(req,res)
+    this.fn(ctx)
+    if(res.statusCode === 200) {
+      res.end(ctx.body)
+    }
+  }
+  // 监听请求
+  listen(...args) {
+    const server = http.createServer(this.handleRequest.bind(this))
+    server.listen(...args)
+  }
+}
+
+module.exports = Application
+
+/* context.js*/
+
+
+const proto = module.exports = {}
+
+function setter(target,key) {
+  proto.__defineSetter__(key,function(value){
+    this[target][key] = value
+  })
+}
+
+function getter(target,key) {
+  proto.__defineGetter__(key,function(){
+    return this[target][key]
+  })
+}
+
+getter('request','url')
+getter('request','path')
+
+setter('response','body')
+getter('response','body')
+
+/* request.js*/
+const url = require('url')
+const parse = require('parseurl');
+
+// request对象是基于原生req进行的扩展
+module.exports = {
+  // 此处的this 指向ctx.request，ctx.request上挂载的有原生req对象
+  get headers() {
+    return this.req.headers
+  },
+  set headers(val) {
+    this.req.headers = val;
+  },
+  get url() {
+    return this.req.url;
+  },
+  set url(val) {
+    this.req.url = val;
+  },
+  get path() {
+    let { pathname } = url.parse(this.req.url)
+    return pathname
+  },
+  set path(path) {
+    const url = parse(this.req);
+    if (url.pathname === path) return;
+
+    url.pathname = path;
+    url.path = null;
+
+    this.url = stringify(url);
+  }
+}
+
+/* response.js */
+module.exports = {
+  _body: undefined,
+  get body() {
+    return this._body
+  },
+  set body(val) {
+    this.res.statusCode = 200
+    this._body = val
+  }
+}
+
+</code></pre>
 
                                 </div>
                     </article>
@@ -127,49 +286,32 @@
                 <!-- right -->
                 <div id="sidebar" class="main-container-right">
                     
-                        <!-- toc -->
-                        
-    <div class="toc-card i-card ">
-        <div class="toc-title i-card-title">目录</div>
-        <div class="toc-content">
-            <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li><a href="#%E5%85%B3%E4%BA%8E%E6%9C%AC%E7%AB%99">🏠 关于本站</a></li>
-<li><a href="#%E5%8D%9A%E4%B8%BB%E6%98%AF%E8%B0%81">👨‍💻 博主是谁</a></li>
-<li><a href="#%E5%85%B4%E8%B6%A3%E7%88%B1%E5%A5%BD">⛹ 兴趣爱好</a></li>
-<li><a href="#%E8%81%94%E7%B3%BB%E6%88%91%E5%91%80">📬 联系我呀</a></li>
-</ul>
-</li>
-</ul>
+                                <!-- id-card -->
+                                
+    <div class="id_card i-card">
+        <div class="id_card-avatar" style="background-image: url(https://feiyayshx.github.io/web-architecture/images/avatar.png?v=1603177989719)">
+        </div>
+        <h1 class="id_card-title">
+            墨眉
+        </h1>
+        <h2 class="id_card-description">
+            温故而知新
+        </h2>
+        <!--  -->
+        <div class="id_card-sns">
+            <!-- github -->
+            
+                    <!-- twitter -->
+                    
+                            <!-- weibo -->
+                            
+                                    <!-- facebook -->
+                                    
 
         </div>
-        <script>
-            function locateCatelogList() {
-                /*获取文章目录集合,可通过:header过滤器*/
-                var alis = $('.post-content :header');
-                /*获取侧边栏目录列表集合**/
-                var sidebar_alis = $('.markdownIt-TOC a');
-                /*获取滚动条到顶部的距离*/
-                var scroll_height = $(window).scrollTop();
-                for (var i = 0; i < alis.length; i++) {
-                    /*获取锚点集合中的元素分别到顶点的距离*/
-                    var a_height = $(alis[i]).offset().top;
-                    if (a_height < scroll_height) {
-                        /*高亮显示*/
-                        sidebar_alis.removeClass('on');
-                        $(sidebar_alis[i]).addClass('on');
-                    }
-                }
-            }
-            $(function() {
-                /*绑定滚动事件 */
-                $(window).bind('scroll', locateCatelogList);
-            });
-        </script>
     </div>
     
-                            
+                                    
 
                 </div>
 

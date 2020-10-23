@@ -7,7 +7,7 @@
 <title>
     墨眉
 </title>
-<link rel="shortcut icon" href="https://feiyayshx.github.io/web-architecture/favicon.ico?v=1602314343170">
+<link rel="shortcut icon" href="https://feiyayshx.github.io/web-architecture/favicon.ico?v=1603177989719">
 <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
 <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
@@ -27,7 +27,7 @@
     <div class="nav">
         <div class="logo">
             <a href="https://feiyayshx.github.io/web-architecture">
-                <img class="avatar" src="https://feiyayshx.github.io/web-architecture/images/avatar.png?v=1602314343170" alt="">
+                <img class="avatar" src="https://feiyayshx.github.io/web-architecture/images/avatar.png?v=1603177989719" alt="">
             </a>
             <div class="site-title">
                 <h1>
@@ -99,6 +99,94 @@
         
             <article class="post i-card">
                 <h2 class="post-title">
+                    <a href="https://feiyayshx.github.io/web-architecture/post/svn-ming-ling/">
+                        SVN命令
+                    </a>
+                </h2>
+                <div class="post-info">
+                    <time class="post-time">2020-10-09 13:56</time>
+                    
+                </div>
+                <div class="post-article">
+                    
+                            <div class="post-content">
+                                
+                                        <div class="post-content-content">
+                                            从本地导入代码到服务器
+svn import [本地仓库地址]  [服务器地址] --username=[用户名] --password=[密码] -m &#39;注释&#39;
+// 例如：
+svn import /Users/apple/Documents/eclipse_workspace/weibo svn://localhost/mycode/weibo --username=mj --password=123 -m &amp;quot;初始化导入&amp;quot;
+
+
+从服务器检出代码到当前目录
+svn checkout [svn地址]
+简写
+svn co [svn 项目地址]
+添加文件到版本库
+
+// 将某个文件添加到版本库
+svn add [filePath]
+// 例如, src下面的index.js 添加到版本库
+svn add src/compiler/index.js
+
+// 添加某个目录下面的所有文件
+svn add src
+
+更新代码到本地
+更新到某个版本
+svn update -r m [path]
+简写
+svn up
+提交代码到远程
+svn commit -m &#39;提交注释&#39;
+简写
+svn ci -m &#39;提交注释&#39;
+撤销工作区修改的代码
+svn revert -R trunk
+查看文件或目录状态
+
+
+查看目录下的文件及字目录状态，正常状态不显示
+svn status [path]
+【?：不在svn的控制中；M：内容被修改；C：发生冲突；A：预定加入到版本库；K：被锁定】
+
+
+svn status -v path(显示文件和子目录状态)
+
+
+查看提交日志
+svn log [path]
+查看文件详细信息
+svn info [path]
+比较差异
+svn diff path(将修改的文件与基础版本比较)
+例如：svn diff test.php
+svn diff -r m:n path(对版本m和版本n比较差异)
+例如：svn diff -r 200:201 test.php
+简写：svn di
+加锁/解锁
+svn lock -m &#39;注释&#39; path
+例如：svn lock -m “lock test file“ test.php
+解锁：svn unlock PATH
+删除文件
+svn delete path -m &#39;注释&#39;
+例如：svn delete svn://192.168.1.1/pro/domain/test.php -m &#39;删除说明&#39;
+或者直接svn delete test.js然后再svn ci -m &#39;删除说明&#39;，推荐使用这种
+简写：svn (del, remove, rm)
+解决冲突
+svn resolved [path]
+注意: 本子命令不会依语法来解决冲突或是移除冲突标记；它只是移除冲突的
+相关文件，然后让 PATH 可以再次提交。
+
+                                        </div>
+                                        
+                                            <a class="btn btn-text" href="https://feiyayshx.github.io/web-architecture/post/svn-ming-ling/">Read More ~</a>
+                            </div>
+                </div>
+            </article>
+            
+            <article class="post i-card">
+                <h2 class="post-title">
                     <a href="https://feiyayshx.github.io/web-architecture/post/node-stream/">
                         Node系列之stream模块
                     </a>
@@ -107,7 +195,7 @@
                     <time class="post-time">2020-09-28 16:04</time>
                     
                         <a href="https://feiyayshx.github.io/web-architecture/tag/node/" class="post-tag i-tag
-                            i-tag-error">
+                            i-tag-other_1">
             #Node
         </a>
                         
@@ -136,7 +224,7 @@
                     <time class="post-time">2020-09-28 09:47</time>
                     
                         <a href="https://feiyayshx.github.io/web-architecture/tag/node/" class="post-tag i-tag
-                            i-tag-warning">
+                            i-tag-primary">
             #Node
         </a>
                         
@@ -165,7 +253,7 @@
                     <time class="post-time">2020-09-22 23:16</time>
                     
                         <a href="https://feiyayshx.github.io/web-architecture/tag/node/" class="post-tag i-tag
-                            i-tag-">
+                            i-tag-other_3">
             #Node
         </a>
                         
@@ -195,7 +283,7 @@
                     <time class="post-time">2020-09-17 12:49</time>
                     
                         <a href="https://feiyayshx.github.io/web-architecture/tag/yCfZPhSqN/" class="post-tag i-tag
-                            i-tag-primary">
+                            i-tag-other_3">
             #Javascript
         </a>
                         
@@ -225,7 +313,7 @@
                     <!-- 个人信息 -->
                     
     <div class="id_card i-card">
-        <div class="id_card-avatar" style="background-image: url(https://feiyayshx.github.io/web-architecture/images/avatar.png?v=1602314343170)">
+        <div class="id_card-avatar" style="background-image: url(https://feiyayshx.github.io/web-architecture/images/avatar.png?v=1603177989719)">
         </div>
         <h1 class="id_card-title">
             墨眉

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://feiyayshx.github.io/web-architecture</id>
     <title>墨眉</title>
-    <updated>2020-10-10T07:19:22.035Z</updated>
+    <updated>2020-10-23T08:12:04.924Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://feiyayshx.github.io/web-architecture"/>
     <link rel="self" href="https://feiyayshx.github.io/web-architecture/atom.xml"/>
@@ -10,6 +10,79 @@
     <logo>https://feiyayshx.github.io/web-architecture/images/avatar.png</logo>
     <icon>https://feiyayshx.github.io/web-architecture/favicon.ico</icon>
     <rights>All rights reserved 2020, 墨眉</rights>
+    <entry>
+        <title type="html"><![CDATA[SVN命令]]></title>
+        <id>https://feiyayshx.github.io/web-architecture/post/svn-ming-ling/</id>
+        <link href="https://feiyayshx.github.io/web-architecture/post/svn-ming-ling/">
+        </link>
+        <updated>2020-10-09T05:56:42.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="从本地导入代码到服务器">从本地导入代码到服务器</h3>
+<pre><code>svn import [本地仓库地址]  [服务器地址] --username=[用户名] --password=[密码] -m '注释'
+// 例如：
+svn import /Users/apple/Documents/eclipse_workspace/weibo svn://localhost/mycode/weibo --username=mj --password=123 -m &quot;初始化导入&quot;
+
+</code></pre>
+<h3 id="从服务器检出代码到当前目录">从服务器检出代码到当前目录</h3>
+<p><code>svn checkout [svn地址]</code></p>
+<p>简写<br>
+<code>svn co [svn 项目地址]</code></p>
+<h3 id="添加文件到版本库">添加文件到版本库</h3>
+<pre><code class="language-javascript">
+// 将某个文件添加到版本库
+svn add [filePath]
+// 例如, src下面的index.js 添加到版本库
+svn add src/compiler/index.js
+
+// 添加某个目录下面的所有文件
+svn add src
+</code></pre>
+<h3 id="更新代码到本地">更新代码到本地</h3>
+<p>更新到某个版本<br>
+<code>svn update -r m [path]</code><br>
+简写<br>
+<code>svn up</code></p>
+<h3 id="提交代码到远程">提交代码到远程</h3>
+<p><code>svn commit -m '提交注释'</code></p>
+<p>简写<br>
+<code>svn ci -m '提交注释'</code></p>
+<h3 id="撤销工作区修改的代码">撤销工作区修改的代码</h3>
+<p><code>svn revert -R trunk</code></p>
+<h3 id="查看文件或目录状态">查看文件或目录状态</h3>
+<ul>
+<li>
+<p>查看目录下的文件及字目录状态，正常状态不显示<br>
+<code>svn status [path]</code><br>
+【?：不在svn的控制中；M：内容被修改；C：发生冲突；A：预定加入到版本库；K：被锁定】</p>
+</li>
+<li>
+<p>svn status -v path(显示文件和子目录状态)</p>
+</li>
+</ul>
+<h3 id="查看提交日志">查看提交日志</h3>
+<p><code>svn log [path]</code></p>
+<h3 id="查看文件详细信息">查看文件详细信息</h3>
+<p><code>svn info [path]</code></p>
+<h3 id="比较差异">比较差异</h3>
+<p><code>svn diff path(将修改的文件与基础版本比较)</code><br>
+例如：<code>svn diff test.php</code></p>
+<p><code>svn diff -r m:n path(对版本m和版本n比较差异)</code><br>
+例如：<code>svn diff -r 200:201 test.php</code></p>
+<p>简写：<code>svn di</code></p>
+<h3 id="加锁解锁">加锁/解锁</h3>
+<p><code>svn lock -m '注释' path</code><br>
+例如：svn lock -m “lock test file“ test.php<br>
+解锁：svn unlock PATH</p>
+<h3 id="删除文件">删除文件</h3>
+<p><code>svn delete path -m '注释'</code><br>
+例如：<code>svn delete svn://192.168.1.1/pro/domain/test.php -m '删除说明'</code><br>
+或者直接<code>svn delete test.js</code>然后再<code>svn ci -m '删除说明'</code>，推荐使用这种<br>
+简写：svn (del, remove, rm)</p>
+<h3 id="解决冲突">解决冲突</h3>
+<p><code>svn resolved [path]</code><br>
+注意: 本子命令不会依语法来解决冲突或是移除冲突标记；它只是移除冲突的<br>
+相关文件，然后让 PATH 可以再次提交。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Node系列之stream模块]]></title>
         <id>https://feiyayshx.github.io/web-architecture/post/node-stream/</id>
