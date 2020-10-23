@@ -5,7 +5,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>
-    JavaSript系列之设计模式 | 墨眉
+    Git常用命令 | 墨眉
 </title>
 <link rel="shortcut icon" href="https://feiyayshx.github.io/web-architecture/favicon.ico?v=1603441319926">
 <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
@@ -99,21 +99,27 @@
                 <div id="content" class="main-container-left">
                     <article class="post i-card">
                         <h2 class="post-title">
-                            JavaSript系列之设计模式
+                            Git常用命令
                         </h2>
                         <div class="post-info">
-                            <time class="post-time">2020-08-26 18:44</time>
+                            <time class="post-time">2020-08-31 10:42</time>
                             
-                                <a href="https://feiyayshx.github.io/web-architecture/tag/yCfZPhSqN/" class="post-tag i-tag
-                            i-tag-">
-                            #Javascript
-                        </a>
-                                
                         </div>
                         
                                 <div class="post-content">
-                                    <h2 id="hello-javascript">hello javascript</h2>
+                                    <p>👏 git 命令行操作，风一般地畅行！</p>
 <!-- more -->
+<h1 id="1-代码在工作区未使用git-add-命令时需要撤销代码">1. 代码在工作区，未使用git add . 命令时，需要撤销代码</h1>
+<pre><code>git checkout [filename] // 撤销某个文件的修改
+git checkout .  // 撤销工作区所有文件的修改
+</code></pre>
+<h1 id="2-使用git-add-缓存了代码撤销代码">2. 使用git add . 缓存了代码，撤销代码</h1>
+<pre><code>git reset HEAD [filename] // 放弃某个文件的缓存
+git reset HEAD . // 放弃所有文件的缓存
+</code></pre>
+<h1 id="3-使用了git-commit">3. 使用了git commit,</h1>
+<pre><code>git reset --hard HEAD^
+git reset --hard commit_id</code></pre>
 
                                 </div>
                     </article>
@@ -133,11 +139,9 @@
         <div class="toc-title i-card-title">目录</div>
         <div class="toc-content">
             <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li><a href="#hello-javascript">hello javascript</a></li>
-</ul>
-</li>
+<li><a href="#1-%E4%BB%A3%E7%A0%81%E5%9C%A8%E5%B7%A5%E4%BD%9C%E5%8C%BA%E6%9C%AA%E4%BD%BF%E7%94%A8git-add-%E5%91%BD%E4%BB%A4%E6%97%B6%E9%9C%80%E8%A6%81%E6%92%A4%E9%94%80%E4%BB%A3%E7%A0%81">1. 代码在工作区，未使用git add . 命令时，需要撤销代码</a></li>
+<li><a href="#2-%E4%BD%BF%E7%94%A8git-add-%E7%BC%93%E5%AD%98%E4%BA%86%E4%BB%A3%E7%A0%81%E6%92%A4%E9%94%80%E4%BB%A3%E7%A0%81">2. 使用git add . 缓存了代码，撤销代码</a></li>
+<li><a href="#3-%E4%BD%BF%E7%94%A8%E4%BA%86git-commit">3. 使用了git commit,</a></li>
 </ul>
 
         </div>
