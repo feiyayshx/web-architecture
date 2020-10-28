@@ -1,0 +1,375 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>
+    移动端布局相关概念及术语 | 墨眉
+</title>
+<link rel="shortcut icon" href="https://feiyayshx.github.io/web-architecture/favicon.ico?v=1603869347284">
+<!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
+<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://feiyayshx.github.io/web-architecture/styles/main.css">
+<!-- js -->
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://feiyayshx.github.io/web-architecture/media/js/jquery.sticky-sidebar.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+
+
+        
+</head>
+
+<body>
+    <div class="main">
+        <div class="header">
+    <div class="nav">
+        <div class="logo">
+            <a href="https://feiyayshx.github.io/web-architecture">
+                <img class="avatar" src="https://feiyayshx.github.io/web-architecture/images/avatar.png?v=1603869347284" alt="">
+            </a>
+            <div class="site-title">
+                <h1>
+                    墨眉
+                </h1>
+            </div>
+        </div>
+        <span class="menu-btn fa fa-align-justify"></span>
+        <div class="menu-container">
+            <ul>
+                
+                    
+                        <li>
+                            <a href="https://feiyayshx.github.io/web-architecture" class="menu" target="_blank">
+                                首页
+                            </a>
+                        </li>
+                        
+                                
+                    
+                            <li>
+                                <a href="https://feiyayshx.github.io/web-architecture/archives" class="menu">
+                                    归档
+                                </a>
+                            </li>
+                            
+                                
+                    
+                            <li>
+                                <a href="https://feiyayshx.github.io/web-architecture/tags" class="menu">
+                                    标签
+                                </a>
+                            </li>
+                            
+                                
+                    
+                            <li>
+                                <a href="https://feiyayshx.github.io/web-architecture/post/about" class="menu">
+                                    关于
+                                </a>
+                            </li>
+                            
+                                
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $(".menu-btn").click(function() {
+            $(".menu-container").slideToggle();
+        });
+        $(window).resize(function() {
+
+            if (window.matchMedia('(min-width: 960px)').matches) {
+                $(".menu-container").css('display', 'block')
+            } else {
+                $(".menu-container").css('display', 'none')
+            }
+
+        });
+    });
+</script>
+
+            <div id="main-content" class="post-detail main-container">
+                <!-- left -->
+                <div id="content" class="main-container-left">
+                    <article class="post i-card">
+                        <h2 class="post-title">
+                            移动端布局相关概念及术语
+                        </h2>
+                        <div class="post-info">
+                            <time class="post-time">2020-10-26 10:27</time>
+                            
+                                <a href="https://feiyayshx.github.io/web-architecture/tag/yi-dong-duan/" class="post-tag i-tag
+                            i-tag-primary">
+                            #移动端
+                        </a>
+                                
+                        </div>
+                        
+                                <div class="post-content">
+                                    <p>✊一大堆概念来了，别再傻傻分不清什么是像素、分辨率、PPI、DPI、DPR、视口...  一文扫盲,不再迷茫！</p>
+<!-- more -->
+<h2 id="1-像素">1.  像素</h2>
+<p><strong>像素</strong>：是组成图像的最小单位，每一个像素都有特定的位置和色彩值。</p>
+<p>图片、电子屏幕都是由一个个像素组成的。</p>
+<h3 id="11-物理像素">1.1 物理像素</h3>
+<p><strong>物理像素</strong>：也叫<strong>设备像素</strong>, 指设备上真实的物理单元。</p>
+<p>例如：屏幕显示器的像素点，打印机的墨点等。</p>
+<h3 id="12-逻辑像素">1.2 逻辑像素</h3>
+<p>逻辑像素：也叫设备独立像素（Device Independent Pixels , 简写：DIP或DP )。 反应在css/js程序中的像素点。</p>
+<p>所以， CSS像素是逻辑像素的一种。<br>
+当描述一张图片宽高时，一般用 200px * 100px，这里的px也是逻辑像素。</p>
+<h2 id="2-英寸">2. 英寸</h2>
+<p>英寸：一般用来描述屏幕的物理大小。</p>
+<p>例如：电脑显示器13英寸，15英寸等，手机显示器5.7英寸。 这里的英寸大小指的是屏幕的对角线长度。</p>
+<h2 id="3-分辨率">3. 分辨率</h2>
+<h3 id="31-屏幕分辨率">3.1 屏幕分辨率</h3>
+<p>屏幕分辨率指一个屏幕有多少个像素点组成。</p>
+<p>例如：iPhone XS Max 分辨率为2688 x 1242像素，这表示手机分别在垂直和水平上所具有的像素点数。</p>
+<p><strong>当然分辨率高不代表屏幕就清晰，屏幕的清晰程度还与尺寸有关。</strong></p>
+<h3 id="32-图像分辨率">3.2 图像分辨率</h3>
+<p>图片分辨率其实是指图片含有的像素数。</p>
+<p>例如：一张图片的分辨率为800 x 400，这表示图片分别在垂直和水平上所具有的像素点数为800和400。</p>
+<p><strong>同一尺寸的图片，分辨率越高，图片越清晰。</strong></p>
+<h2 id="4-ppi-pixel-per-inch">4. PPI (pixel per Inch)</h2>
+<p>PPI: 每英寸包含的像素数。</p>
+<p>PPI 可以用来描述屏幕的清晰度或图片的质量。<br>
+当PPI 描述屏幕时，PPI越高，屏幕越清晰；当PPI 描述图片时，PPI越高，图片质量越高。</p>
+<p>例如：iPhone XS Max 和 iPhone SE的PPI分别为458和326，说明iPhone XS Max比 iPhone SE的屏幕更清晰。</p>
+<h2 id="5-dpidot-per-inch">5. DPI（Dot per Inch）</h2>
+<p>DPI: 每英寸包含的点数。这里的点是一个抽象单位，可以是屏幕的像素点，图片的像素点，或者打印机的墨点。</p>
+<p>当DPI描述屏幕和图片时，则等价于PPI。<br>
+当DPI描述打印机时，则表示打印机每英寸可以打印的点数。</p>
+<p>打印机的DPI越高，打印图像的精细程度就越高，同时这也会消耗更多的墨点和时间。</p>
+<h2 id="6-dpr-device-pixel-ratio">6. DPR (Device Pixel Ratio)</h2>
+<p>设备像素比：物理像素/设备独立像素。</p>
+<p>在web中，通过浏览器提供的window.devicePixelRatio 获取dpr；</p>
+<p>在css中，通过媒体查询min-device-pixel-ratio区分dpr；</p>
+<h2 id="7-移动端开发">7. 移动端开发</h2>
+<p>在iOS、Android和React Native开发中样式单位其实都使用的是设备独立像素。</p>
+<p>在使用RN开发app, 或者开发h5时，UI设计一般是基于iphone6的像素设计的。iphone6的物理像素750*1334，设备像素比是2。为了适配所有机型，在写样式时需要把物理像素转为设备独立像素。<br>
+例如：给定一个元素，宽度300px，样式布局时的宽度就是150px = 300px/2;  所以，为了减少计算，设计图可以直接按设备独立像素给出。</p>
+<h2 id="8-web端开发">8. web端开发</h2>
+<p>在PC端开发时，当页面正常情况下，即缩放比例100%，一个css像素等于一个设备独立像素；<br>
+当用户对浏览器进行了放大，css像素也会放大，一个css像素会跨越更多的物理像素；<br>
+<strong>页面放大比例 = css像素/设备独立像素</strong></p>
+<h2 id="9-retina-屏幕">9. Retina 屏幕</h2>
+<p>Retina 是一种高分辨率的显示标准，把更多的像素点压缩至一块屏幕里，从而达到更高的分辨率，并提高屏幕显示的细腻程度。也称为视网膜显示屏。在正常观看距离下足以使人肉眼无法分辨其中的单独像素。</p>
+<p>第三代iPad发布会上，苹果给出了Retina设计标准的公式：<br>
+<img src="https://feiyayshx.github.io/web-architecture/post-images/1603701724180.png" alt="" loading="lazy"></p>
+<p>其中 a代表人眼视角，h 代表像素间距，d代表肉眼与屏幕的距离。符合以上条件的屏幕可以使肉眼看不见单个物理像素点。这样的IPS屏幕就可被苹果称作“Retina显示屏”。</p>
+<p>它不能单纯的表达分辨率和PPI，只是表达视觉效果。</p>
+<p>让多个物理像素渲染一个独立像素只是Retina屏幕为了达到效果而使用的一种技术。而不是所有dpr &gt; 1的屏幕就是Retina屏幕。</p>
+<p>例如：给你一块超大尺寸的屏幕，即使它的PPI很高，DPR也很高，在近距离你也能看清它的像素点，这就不算Retina屏幕。</p>
+<p>常见地我们使用K和P来描述屏幕的大小或清晰度：</p>
+<p>K代表屏幕横向有几个1024个像素，一般来讲横向像素超过2048就属于2K屏，横向像素超过4096就属于4K屏。</p>
+<p>P代表的就是屏幕纵向的像素个数，1080P即纵向有1080个像素，分辨率为1920X1080的屏幕就属于1080P屏幕。</p>
+<p>所谓的高清屏其实就是屏幕的物理分辨率达到或超过1920X1080的屏幕。</p>
+<h2 id="10-viewport-视口">10. viewport (视口)</h2>
+<p>视口(viewport)代表当前可见的计算机图形区域。在 Web 浏览器术语中，通常与浏览器窗口相同，但不包括浏览器的 UI， 菜单栏等——即指你正在浏览的文档的那一部分。</p>
+<p>一般视口有三种：布局视口、视觉视口、理想视口。</p>
+<blockquote>
+<p>viewport 大小是可变的，因为viewport 的宽度并不总是窗口的宽度。</p>
+</blockquote>
+<h3 id="101-布局视口layout-viewport">10.1 布局视口（layout viewport）</h3>
+<p>布局视口是网页布局的基准窗口。</p>
+<p>在PC端，布局视口等于浏览器窗口(不包括borders,margins,滚动条，浏览器框架)；</p>
+<p>在移动端，布局视口往往大于浏览器窗口，一般给定一个默认值<strong>980px</strong>, 能够让PC的网页可以在手机浏览器上呈现，但是非常小，用户可以手动对网页进行放大。</p>
+<p>我们通过<code>document.documentElement.clientWidth/clientHeight</code> 获取布局视口的大小。</p>
+<h3 id="102-视觉视口visual-viewport">10.2 视觉视口（visual viewport）</h3>
+<p>视觉视口是用户在浏览器中看到的网页区域，它是可变化的。</p>
+<p>用户可以通过缩放来查看网页内容，当用户放大网页时，我们能看到的网页区域缩小，此时视觉视口变小；同样，当用户缩小网页时，我们能看到的网页区域变大，此时视觉视口也变大；不管放大还是缩小网页，布局视口始终不变。</p>
+<p>通过调用<code>window.innerWidth / innerHeight</code> 来获取视觉视口大小。</p>
+<h3 id="103-理想视口-ideal-viewport">10.3 理想视口 （ideal viewport）</h3>
+<p>理想视口是布局视口的一个理想尺寸。</p>
+<p>只有当布局视口的尺寸等于设备屏幕的尺寸时，才是理想视口。</p>
+<p>当页面缩放比例为100%时，CSS像素 = 设备独立像素，理想视口 = 视觉视口</p>
+<p>通过 <code>window.screen.width/height</code> 获取理想视口大小。</p>
+<blockquote>
+<p>布局视口限制css 布局，视觉视口控制用户看到的网页内容；<br>
+在web浏览器中有两个视口：布局视口，视觉视口；<br>
+在移动端，除了布局视口，视觉视口，还有一个理想视口。它是对特定浏览器的布局视口的一个理想尺寸。</p>
+</blockquote>
+<h2 id="11-移动端适配">11. 移动端适配</h2>
+<p>移动设备默认的viewport 是布局视口(layout viewport), 布局视口一般比屏幕大的多，在移动端布局开发时，我们需要的是理想视口（ideal viewport）；此时，我们需要引入meta 标签设置viewport。</p>
+<p>meta viewport 标签首先是由苹果公司在其safari浏览器中引入的，目的就是解决移动设备的viewport问题。后来各大浏览器厂商也都支持了它。</p>
+<p><code>&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width; initial-scale=1; maximum-scale=1; minimum-scale=1; user-scalable=no;&quot;&gt;</code></p>
+<p>viewport的配置属性如下：</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th style="text-align:center">Value</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>width</td>
+<td style="text-align:center">正整数或者device-width</td>
+<td>以px为单位，定义layout viewport的宽度</td>
+</tr>
+<tr>
+<td>height</td>
+<td style="text-align:center">正整数或者device-height</td>
+<td>以px为单位，定义layout viewport的高度</td>
+</tr>
+<tr>
+<td>initial-scale</td>
+<td style="text-align:center">0.0-10.0</td>
+<td>定义页面初始缩放比率</td>
+</tr>
+<tr>
+<td>minimum-scale</td>
+<td style="text-align:center">0.0-10.0</td>
+<td>定义缩放的最小值；必须小于或等于maximum-scale的值</td>
+</tr>
+<tr>
+<td>maximum-scale</td>
+<td style="text-align:center">0.0-10.0</td>
+<td>定义缩放的最大值；必须大于或等于minimum-scale的值</td>
+</tr>
+<tr>
+<td>user-scalable</td>
+<td style="text-align:center">yes或者no</td>
+<td>如果设置为 no，用户将不能放大或缩小网页。默认值为 yes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>移动端布局</strong></p>
+<p>在移动端，为了让页面布局达到理想效果，需要让布局视口，视觉视口尽可能等于理想视口；</p>
+<p>device-width等于理想视口的宽度，所以设置width=device-width就相当于让<strong>布局视口</strong>等于理想视口。</p>
+<p>由于initial-scale = 理想视口宽度 / 视觉视口宽度，所以我们设置initial-scale=1;就相当于让<strong>视觉视口</strong>等于理想视口。</p>
+<p><strong>页面缩放</strong></p>
+<p>当我们设置width时，可以决定布局视口的宽度，但是设置initial-scale也会影响到布局视口宽度，因为布局视口宽度取的是width和视觉视口宽度的最大值，即：<code>布局视口宽度 = Math.max(width, 视觉视口宽度）</code></p>
+<p>例如：在iphone中，如果理想视口的宽度是320px，设置width=device-width; initial-scale=2; 则:   <code>视觉视口宽度 = 320px/2 = 160px</code>, 布局视口的宽度取width和视觉视口宽度的最大值，故布局视口宽度是400px；如果设置initial-scale=0.5，<code>视觉视口宽度 = 320px * 2 = 640px</code>, 此时布局视口宽度取最大值640px。</p>
+<p><em>参考文章</em>：</p>
+<p><a href="http://www.conardli.top/blog/article/%E5%A4%9A%E7%AB%AF%E5%BC%80%E5%8F%91/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E9%80%82%E9%85%8D%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89%E5%BA%94%E7%94%A8%E7%AF%87.html#%E5%AF%BC%E8%AF%BB">移动端适配总结</a><br>
+<a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/Viewport_concepts">视口概念</a><br>
+<a href="https://www.jianshu.com/p/7c5fdf90c0ef">viewport、布局视口、视觉视口、理想视口 深入理解</a></p>
+<p><em>相关资料</em>：</p>
+<p><a href="https://viewportsizes.com/?filter=">手机设备尺寸一览表</a><br>
+<a href="https://www.quirksmode.org/mobile/viewports.html">Peter-Paul Koch 博客</a></p>
+
+                                </div>
+                    </article>
+                    <!--  -->
+                    
+                        <div class="next-post">
+                            <div class="next">下一篇</div>
+                            <a href="https://feiyayshx.github.io/web-architecture/post/svn-command/">
+                                <h3 class="post-title">
+                                    SVN命令
+                                </h3>
+                            </a>
+                        </div>
+                        
+                            <div id="disqus_thread"></div>
+                            <div id="gitalk-container"></div>
+                </div>
+                <!-- middle -->
+                <div class="main-container-middle"></div>
+                <!-- right -->
+                <div id="sidebar" class="main-container-right">
+                    
+                        <!-- toc -->
+                        
+    <div class="toc-card i-card ">
+        <div class="toc-title i-card-title">目录</div>
+        <div class="toc-content">
+            <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#1-%E5%83%8F%E7%B4%A0">1.  像素</a>
+<ul>
+<li><a href="#11-%E7%89%A9%E7%90%86%E5%83%8F%E7%B4%A0">1.1 物理像素</a></li>
+<li><a href="#12-%E9%80%BB%E8%BE%91%E5%83%8F%E7%B4%A0">1.2 逻辑像素</a></li>
+</ul>
+</li>
+<li><a href="#2-%E8%8B%B1%E5%AF%B8">2. 英寸</a></li>
+<li><a href="#3-%E5%88%86%E8%BE%A8%E7%8E%87">3. 分辨率</a>
+<ul>
+<li><a href="#31-%E5%B1%8F%E5%B9%95%E5%88%86%E8%BE%A8%E7%8E%87">3.1 屏幕分辨率</a></li>
+<li><a href="#32-%E5%9B%BE%E5%83%8F%E5%88%86%E8%BE%A8%E7%8E%87">3.2 图像分辨率</a></li>
+</ul>
+</li>
+<li><a href="#4-ppi-pixel-per-inch">4. PPI (pixel per Inch)</a></li>
+<li><a href="#5-dpidot-per-inch">5. DPI（Dot per Inch）</a></li>
+<li><a href="#6-dpr-device-pixel-ratio">6. DPR (Device Pixel Ratio)</a></li>
+<li><a href="#7-%E7%A7%BB%E5%8A%A8%E7%AB%AF%E5%BC%80%E5%8F%91">7. 移动端开发</a></li>
+<li><a href="#8-web%E7%AB%AF%E5%BC%80%E5%8F%91">8. web端开发</a></li>
+<li><a href="#9-retina-%E5%B1%8F%E5%B9%95">9. Retina 屏幕</a></li>
+<li><a href="#10-viewport-%E8%A7%86%E5%8F%A3">10. viewport (视口)</a>
+<ul>
+<li><a href="#101-%E5%B8%83%E5%B1%80%E8%A7%86%E5%8F%A3layout-viewport">10.1 布局视口（layout viewport）</a></li>
+<li><a href="#102-%E8%A7%86%E8%A7%89%E8%A7%86%E5%8F%A3visual-viewport">10.2 视觉视口（visual viewport）</a></li>
+<li><a href="#103-%E7%90%86%E6%83%B3%E8%A7%86%E5%8F%A3-ideal-viewport">10.3 理想视口 （ideal viewport）</a></li>
+</ul>
+</li>
+<li><a href="#11-%E7%A7%BB%E5%8A%A8%E7%AB%AF%E9%80%82%E9%85%8D">11. 移动端适配</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+        <script>
+            function locateCatelogList() {
+                /*获取文章目录集合,可通过:header过滤器*/
+                var alis = $('.post-content :header');
+                /*获取侧边栏目录列表集合**/
+                var sidebar_alis = $('.markdownIt-TOC a');
+                /*获取滚动条到顶部的距离*/
+                var scroll_height = $(window).scrollTop();
+                for (var i = 0; i < alis.length; i++) {
+                    /*获取锚点集合中的元素分别到顶点的距离*/
+                    var a_height = $(alis[i]).offset().top;
+                    if (a_height < scroll_height) {
+                        /*高亮显示*/
+                        sidebar_alis.removeClass('on');
+                        $(sidebar_alis[i]).addClass('on');
+                    }
+                }
+            }
+            $(function() {
+                /*绑定滚动事件 */
+                $(window).bind('scroll', locateCatelogList);
+            });
+        </script>
+    </div>
+    
+                            
+
+                </div>
+
+
+
+
+            </div>
+
+
+            <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://feiyayshx.github.io/web-architecture/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+
+    </div>
+    <script>
+        $('#sidebar').stickySidebar({
+            topSpacing: 80,
+            // bottomSpacing: 60
+        });
+    </script>
+    
+</body>
+
+</html>
