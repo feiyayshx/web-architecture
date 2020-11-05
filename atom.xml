@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://feiyayshx.github.io/web-architecture</id>
     <title>墨眉</title>
-    <updated>2020-10-30T01:16:57.267Z</updated>
+    <updated>2020-11-05T10:29:11.399Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://feiyayshx.github.io/web-architecture"/>
     <link rel="self" href="https://feiyayshx.github.io/web-architecture/atom.xml"/>
@@ -209,7 +209,7 @@ svn add src
 <li>
 <p>查看目录下的文件及字目录状态，正常状态不显示<br>
 <code>svn status [path]</code><br>
-【?：不在svn的控制中；M：内容被修改；C：发生冲突；A：预定加入到版本库；K：被锁定】</p>
+【?：不在svn的控制中；M：内容被修改；C：发生冲突；A：预定加入到版本库；K：被锁定；!已经删除的文件，但还未标记为从svn版本库中删除】</p>
 </li>
 <li>
 <p>svn status -v path(显示文件和子目录状态)</p>
@@ -234,6 +234,19 @@ svn add src
 例如：<code>svn delete svn://192.168.1.1/pro/domain/test.php -m '删除说明'</code><br>
 或者直接<code>svn delete test.js</code>然后再<code>svn ci -m '删除说明'</code>，推荐使用这种<br>
 简写：svn (del, remove, rm)</p>
+<h3 id="批量删除添加">批量删除/添加</h3>
+<p><code>svn status|grep ! |awk '{print $2}'|xargs svn del</code></p>
+<p>命令解释：</p>
+<ul>
+<li>首先执行svn status，查看svn状态，列出文件的所有改动；</li>
+<li>！标记的文件是已经删除的文件还未被svn版本库标记；grep ！是将！标记的文件单独抽离出来;</li>
+<li>再用awk '{print $2}'将抽离出来的文本结果处理，留下每一行的第二段文字，即后面的文件名；<br>
+此处必须注意，svn status|grep !和后面的语句|awk '{print $2}'|xargs svn del之间，必须有一个空格，否则终端还是会认为这个!号是特殊符号。</li>
+<li>最后递交给svn del命令，使用xargs这个参数构造命令，将每一行的文本作为参数提供给svn del，结果就是所有列出的文件都执行了一遍del了。</li>
+</ul>
+<blockquote>
+<p>批量添加文件同理，只是标记符号是？<code>svn status|grep ? |awk '{print $2}'|xargs svn add</code></p>
+</blockquote>
 <h3 id="解决冲突">解决冲突</h3>
 <p><code>svn resolved [path]</code><br>
 注意: 本子命令不会依语法来解决冲突或是移除冲突标记；它只是移除冲突的<br>
