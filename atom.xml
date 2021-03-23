@@ -2,14 +2,63 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://feiyayshx.github.io/web-architecture</id>
     <title>墨眉</title>
-    <updated>2020-11-05T10:29:11.399Z</updated>
+    <updated>2021-03-23T10:24:58.603Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://feiyayshx.github.io/web-architecture"/>
     <link rel="self" href="https://feiyayshx.github.io/web-architecture/atom.xml"/>
     <subtitle>温故而知新</subtitle>
     <logo>https://feiyayshx.github.io/web-architecture/images/avatar.png</logo>
     <icon>https://feiyayshx.github.io/web-architecture/favicon.ico</icon>
-    <rights>All rights reserved 2020, 墨眉</rights>
+    <rights>All rights reserved 2021, 墨眉</rights>
+    <entry>
+        <title type="html"><![CDATA[Vue 核心原理及开发总结]]></title>
+        <id>https://feiyayshx.github.io/web-architecture/post/vue-he-xin-yuan-li-ji-kai-fa-zong-jie/</id>
+        <link href="https://feiyayshx.github.io/web-architecture/post/vue-he-xin-yuan-li-ji-kai-fa-zong-jie/">
+        </link>
+        <updated>2021-02-11T06:15:14.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="babelrc-配置">.babelrc 配置</h3>
+<pre><code>{
+   // 预设，插件的集合
+  &quot;presets&quot;: [
+      // 把es6转化为es5
+    &quot;@babel/preset-env&quot;
+  ]
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[H5开发-常用功能实现方案汇总]]></title>
+        <id>https://feiyayshx.github.io/web-architecture/post/h5-kai-fa-chang-yong-gong-neng-shi-xian-fang-an-hui-zong/</id>
+        <link href="https://feiyayshx.github.io/web-architecture/post/h5-kai-fa-chang-yong-gong-neng-shi-xian-fang-an-hui-zong/">
+        </link>
+        <updated>2021-02-02T06:12:36.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="h5实现一键拨号的电话拨打功能">h5实现一键拨号的电话拨打功能</h3>
+<pre><code>&lt;a href=&quot;tel:13764567708&quot;&gt;移动WEB页面一键拨打号码&lt;/a&gt;
+// qq 浏览器兼容性不好
+</code></pre>
+<h3 id="h5实现一键发送短信功能">h5实现一键发送短信功能</h3>
+<pre><code>&lt;a href=&quot;sms:13764567708&quot;&gt;移动WEB页面一键发送短信&lt;/a&gt;
+// qq 浏览器兼容性不好
+</code></pre>
+<h3 id="移动web页面自动探测电话号码">移动web页面自动探测电话号码</h3>
+<pre><code>&lt;meta name=&quot;format-detection&quot;  content=&quot;telephone=yes&quot;&gt;
+
+&lt;meta  http-equiv=&quot;x-rim-auto-match&quot; content=&quot;none&quot;&gt;
+
+</code></pre>
+<h3 id="使用wtai协议进行拨打电话">使用wtai协议进行拨打电话</h3>
+<pre><code>&lt;a href=&quot;wtai://wp//mc;13764567708&quot;&gt;拨打10086 &lt;/a&gt; 
+&lt; a href=&quot;wtai://wp/ap;13764567708;&quot;&gt;将10086存储至电话簿 &lt;/a&gt;
+
+</code></pre>
+<h3 id="h5页面调用高德h5地图">h5页面调用高德h5地图</h3>
+<pre><code>在调用处，打开该链接地址，传入参入
+https://uri.amap.com/marker?position=116.473195,39.993253&amp;name=地址&amp;callnative=1
+</code></pre>
+<p><a href="https://developer.amap.com/api/uri-api/summary/">高德h5地图开发文档</a></p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[移动端布局相关概念及术语]]></title>
         <id>https://feiyayshx.github.io/web-architecture/post/h5-word/</id>
@@ -251,6 +300,8 @@ svn add src
 <p><code>svn resolved [path]</code><br>
 注意: 本子命令不会依语法来解决冲突或是移除冲突标记；它只是移除冲突的<br>
 相关文件，然后让 PATH 可以再次提交。</p>
+<h3 id="忽略">忽略</h3>
+<p>https://blog.csdn.net/qq_24909089/article/details/85334570</p>
 ]]></content>
     </entry>
     <entry>

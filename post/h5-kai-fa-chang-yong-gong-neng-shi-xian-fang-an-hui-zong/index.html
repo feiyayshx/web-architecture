@@ -5,7 +5,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>
-    关于 | 墨眉
+    H5开发-常用功能实现方案汇总 | 墨眉
 </title>
 <link rel="shortcut icon" href="https://feiyayshx.github.io/web-architecture/favicon.ico?v=1616227333091">
 <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
@@ -99,26 +99,52 @@
                 <div id="content" class="main-container-left">
                     <article class="post i-card">
                         <h2 class="post-title">
-                            关于
+                            H5开发-常用功能实现方案汇总
                         </h2>
                         <div class="post-info">
-                            <time class="post-time">2019-01-25 19:09</time>
+                            <time class="post-time">2021-02-02 14:12</time>
                             
                         </div>
                         
                                 <div class="post-content">
-                                    <blockquote>
-<p>欢迎来到我的小站呀，很高兴遇见你！🤝</p>
-</blockquote>
-<h2 id="关于本站">🏠 关于本站</h2>
-<h2 id="博主是谁">👨‍💻 博主是谁</h2>
-<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
-<h2 id="联系我呀">📬 联系我呀</h2>
+                                    <h3 id="h5实现一键拨号的电话拨打功能">h5实现一键拨号的电话拨打功能</h3>
+<pre><code>&lt;a href=&quot;tel:13764567708&quot;&gt;移动WEB页面一键拨打号码&lt;/a&gt;
+// qq 浏览器兼容性不好
+</code></pre>
+<h3 id="h5实现一键发送短信功能">h5实现一键发送短信功能</h3>
+<pre><code>&lt;a href=&quot;sms:13764567708&quot;&gt;移动WEB页面一键发送短信&lt;/a&gt;
+// qq 浏览器兼容性不好
+</code></pre>
+<h3 id="移动web页面自动探测电话号码">移动web页面自动探测电话号码</h3>
+<pre><code>&lt;meta name=&quot;format-detection&quot;  content=&quot;telephone=yes&quot;&gt;
+
+&lt;meta  http-equiv=&quot;x-rim-auto-match&quot; content=&quot;none&quot;&gt;
+
+</code></pre>
+<h3 id="使用wtai协议进行拨打电话">使用wtai协议进行拨打电话</h3>
+<pre><code>&lt;a href=&quot;wtai://wp//mc;13764567708&quot;&gt;拨打10086 &lt;/a&gt; 
+&lt; a href=&quot;wtai://wp/ap;13764567708;&quot;&gt;将10086存储至电话簿 &lt;/a&gt;
+
+</code></pre>
+<h3 id="h5页面调用高德h5地图">h5页面调用高德h5地图</h3>
+<pre><code>在调用处，打开该链接地址，传入参入
+https://uri.amap.com/marker?position=116.473195,39.993253&amp;name=地址&amp;callnative=1
+</code></pre>
+<p><a href="https://developer.amap.com/api/uri-api/summary/">高德h5地图开发文档</a></p>
 
                                 </div>
                     </article>
                     <!--  -->
                     
+                        <div class="next-post">
+                            <div class="next">下一篇</div>
+                            <a href="https://feiyayshx.github.io/web-architecture/post/h5-word/">
+                                <h3 class="post-title">
+                                    移动端布局相关概念及术语
+                                </h3>
+                            </a>
+                        </div>
+                        
                             <div id="disqus_thread"></div>
                             <div id="gitalk-container"></div>
                 </div>
@@ -135,10 +161,15 @@
             <ul class="markdownIt-TOC">
 <li>
 <ul>
-<li><a href="#%E5%85%B3%E4%BA%8E%E6%9C%AC%E7%AB%99">🏠 关于本站</a></li>
-<li><a href="#%E5%8D%9A%E4%B8%BB%E6%98%AF%E8%B0%81">👨‍💻 博主是谁</a></li>
-<li><a href="#%E5%85%B4%E8%B6%A3%E7%88%B1%E5%A5%BD">⛹ 兴趣爱好</a></li>
-<li><a href="#%E8%81%94%E7%B3%BB%E6%88%91%E5%91%80">📬 联系我呀</a></li>
+<li>
+<ul>
+<li><a href="#h5%E5%AE%9E%E7%8E%B0%E4%B8%80%E9%94%AE%E6%8B%A8%E5%8F%B7%E7%9A%84%E7%94%B5%E8%AF%9D%E6%8B%A8%E6%89%93%E5%8A%9F%E8%83%BD">h5实现一键拨号的电话拨打功能</a></li>
+<li><a href="#h5%E5%AE%9E%E7%8E%B0%E4%B8%80%E9%94%AE%E5%8F%91%E9%80%81%E7%9F%AD%E4%BF%A1%E5%8A%9F%E8%83%BD">h5实现一键发送短信功能</a></li>
+<li><a href="#%E7%A7%BB%E5%8A%A8web%E9%A1%B5%E9%9D%A2%E8%87%AA%E5%8A%A8%E6%8E%A2%E6%B5%8B%E7%94%B5%E8%AF%9D%E5%8F%B7%E7%A0%81">移动web页面自动探测电话号码</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8wtai%E5%8D%8F%E8%AE%AE%E8%BF%9B%E8%A1%8C%E6%8B%A8%E6%89%93%E7%94%B5%E8%AF%9D">使用wtai协议进行拨打电话</a></li>
+<li><a href="#h5%E9%A1%B5%E9%9D%A2%E8%B0%83%E7%94%A8%E9%AB%98%E5%BE%B7h5%E5%9C%B0%E5%9B%BE">h5页面调用高德h5地图</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
